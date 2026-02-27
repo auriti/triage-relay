@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Sheet,
   SheetContent,
@@ -26,6 +26,13 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
   const [brief, setBrief] = useState<TriageBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Reset stato quando cambia l'issue (evita setState durante render)
+  useEffect(() => {
+    setBrief(null)
+    setError(null)
+    setLoading(false)
+  }, [issue?.github_issue_number])
 
   async function generateBrief() {
     if (!issue) return
@@ -60,11 +67,7 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
     }
   }
 
-  // Reset quando si cambia issue
-  if (!issue) {
-    if (brief) setBrief(null)
-    return null
-  }
+  if (!issue) return null
 
   return (
     <Sheet open={!!issue} onOpenChange={(open) => !open && onClose()}>
@@ -121,6 +124,7 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
 
               {brief && (
                 <ProposalForm
+                  key={`${issue.github_issue_number}-${brief.confidence}`}
                   roomId={roomId}
                   issueNumber={issue.github_issue_number}
                   roomLabels={roomLabels}

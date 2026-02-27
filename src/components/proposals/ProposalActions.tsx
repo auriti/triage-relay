@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { updateProposalStatus } from '@/app/actions/proposals'
 import { toast } from 'sonner'
@@ -12,6 +13,7 @@ interface ProposalActionsProps {
 }
 
 export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
   async function handleApply() {
@@ -31,6 +33,7 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
       }
 
       toast.success(`Applied: ${data.applied.join(', ')}`)
+      router.refresh()
     } catch {
       toast.error('Failed to apply on GitHub')
     } finally {
@@ -43,6 +46,7 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
     try {
       await updateProposalStatus(proposal.id, 'rejected', roomId)
       toast.success('Proposal rejected')
+      router.refresh()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to reject')
     } finally {

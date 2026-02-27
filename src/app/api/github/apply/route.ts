@@ -116,6 +116,11 @@ export async function POST(request: Request) {
         applied.push('comment')
         break
       }
+      default:
+        return NextResponse.json(
+          { error: `Unknown proposal kind: ${proposal.kind}` },
+          { status: 400 }
+        )
     }
 
     // Aggiorna stato proposta con service client (bypassa RLS)
@@ -131,6 +136,11 @@ export async function POST(request: Request) {
 
     if (updateError) {
       console.error('[GITHUB_APPLY] Update proposal failed:', updateError.message)
+      // Azioni GitHub applicate ma stato DB non aggiornato
+      return NextResponse.json(
+        { success: true, applied, warning: 'Applied on GitHub but database update failed. Refresh to check status.' },
+        { status: 207 }
+      )
     }
 
     return NextResponse.json({ success: true, applied })

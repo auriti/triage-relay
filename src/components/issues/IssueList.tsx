@@ -27,7 +27,6 @@ export function IssueList({
 }: IssueListProps) {
   const [issues, setIssues] = useState<IssueCache[]>(initialIssues)
   const [filter, setFilter] = useState<FilterTab>('all')
-  const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
 
@@ -84,7 +83,7 @@ export function IssueList({
   // Conteggi per i tab
   const unlabeledCount = issues.filter((i) => ((i.labels as string[]) || []).length === 0).length
 
-  if (loading && issues.length === 0) {
+  if (syncing && issues.length === 0) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 6 }).map((_, i) => (
