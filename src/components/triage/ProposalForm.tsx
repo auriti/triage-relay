@@ -131,7 +131,7 @@ export function ProposalForm({
       {/* Labels (per label e needs_info) */}
       {(kind === 'label' || kind === 'needs_info') && (
         <div>
-          <label className="text-xs font-medium text-muted-foreground">Labels</label>
+          <label htmlFor="proposal-labels" className="text-xs font-medium text-muted-foreground">Labels</label>
           <div className="mt-1 flex flex-wrap gap-1">
             {roomLabels.map((label) => (
               <Badge
@@ -150,8 +150,9 @@ export function ProposalForm({
       {/* Comment (per comment e needs_info) */}
       {(kind === 'comment' || kind === 'needs_info') && (
         <div>
-          <label className="text-xs font-medium text-muted-foreground">Comment</label>
+          <label htmlFor="proposal-comment" className="text-xs font-medium text-muted-foreground">Comment</label>
           <Textarea
+            id="proposal-comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={5}
@@ -165,10 +166,11 @@ export function ProposalForm({
       {kind === 'duplicate' && (
         <div className="space-y-2">
           <div>
-            <label className="text-xs font-medium text-muted-foreground">
+            <label htmlFor="proposal-duplicate-of" className="text-xs font-medium text-muted-foreground">
               Duplicate of issue #
             </label>
             <Input
+              id="proposal-duplicate-of"
               type="number"
               value={duplicateOf}
               onChange={(e) => setDuplicateOf(e.target.value)}
@@ -177,8 +179,9 @@ export function ProposalForm({
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Reason</label>
+            <label htmlFor="proposal-duplicate-reason" className="text-xs font-medium text-muted-foreground">Reason</label>
             <Textarea
+              id="proposal-duplicate-reason"
               value={duplicateReason}
               onChange={(e) => setDuplicateReason(e.target.value)}
               rows={2}

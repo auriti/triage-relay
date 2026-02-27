@@ -10,16 +10,16 @@ export default async function ProposalsPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  // Auth e membership già verificate dai parent layout
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
 
-  // Verifica ruolo maintainer
+  // Verifica ruolo maintainer (il layout verifica solo membership)
   const { data: member } = await supabase
     .from('room_members')
     .select('role')
     .eq('room_id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', user!.id)
     .single()
 
   if (!member || member.role !== 'maintainer') {

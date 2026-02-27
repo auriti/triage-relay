@@ -9,14 +9,21 @@ interface IssueCardProps {
   isSelected: boolean
   onClick: () => void
   hasPendingProposal?: boolean
+  currentUserId?: string
 }
 
-export function IssueCard({ issue, isSelected, onClick, hasPendingProposal }: IssueCardProps) {
+export function IssueCard({ issue, isSelected, onClick, hasPendingProposal, currentUserId }: IssueCardProps) {
   const labels = (issue.labels as string[]) || []
+
+  // Verifica se il claim è ancora valido (30 min)
+  const isClaimActive = issue.claimed_by && issue.claimed_at &&
+    (Date.now() - new Date(issue.claimed_at).getTime()) < 30 * 60 * 1000
+  const isClaimedByMe = isClaimActive && issue.claimed_by === currentUserId
 
   return (
     <button
       onClick={onClick}
+      aria-label={`Issue #${issue.github_issue_number}: ${issue.title}`}
       className={`group w-full rounded-lg border p-4 text-left transition-all duration-150 ${
         isSelected
           ? 'border-primary/50 bg-primary/5 ring-1 ring-primary/20'
@@ -43,6 +50,20 @@ export function IssueCard({ issue, isSelected, onClick, hasPendingProposal }: Is
               <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
                 <span className="h-1 w-1 rounded-full bg-warning" />
                 Pending
+              </span>
+            )}
+            {isClaimActive && (
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                isClaimedByMe
+                  ? 'bg-primary/10 text-primary'
+                  : 'bg-secondary text-muted-foreground'
+              }`}>
+                <span className={`h-1 w-1 rounded-full ${isClaimedByMe ? 'bg-primary' : 'bg-muted-foreground'}`} />
+                {isClaimedByMe
+                  ? 'You'
+                  : issue.claimed_by_username
+                    ? `@${issue.claimed_by_username}`
+                    : 'Claimed'}
               </span>
             )}
           </div>

@@ -16,6 +16,7 @@ interface IssueListProps {
   pendingProposalIssues: number[]
   onSelectIssue: (issue: IssueCache | null) => void
   selectedIssueNumber: number | null
+  currentUserId?: string
 }
 
 export function IssueList({
@@ -24,6 +25,7 @@ export function IssueList({
   pendingProposalIssues,
   onSelectIssue,
   selectedIssueNumber,
+  currentUserId,
 }: IssueListProps) {
   const [issues, setIssues] = useState<IssueCache[]>(initialIssues)
   const [filter, setFilter] = useState<FilterTab>('all')
@@ -168,6 +170,7 @@ export function IssueList({
                 )
               }
               hasPendingProposal={pendingProposalIssues.includes(issue.github_issue_number)}
+              currentUserId={currentUserId}
             />
           ))}
         </div>

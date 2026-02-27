@@ -13,9 +13,9 @@ export default async function RoomLayout({
   // Next.js 16: params è Promise
   const { id } = await params
 
+  // Auth già verificata dal parent (auth)/layout.tsx
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
 
   // Fetch room
   const { data: room } = await supabase
@@ -31,7 +31,7 @@ export default async function RoomLayout({
     .from('room_members')
     .select('role')
     .eq('room_id', id)
-    .eq('user_id', user.id)
+    .eq('user_id', user!.id)
     .single()
 
   if (!member) redirect('/dashboard')

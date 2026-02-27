@@ -47,6 +47,9 @@ export interface IssueCache {
   created_at: string | null
   updated_at: string | null
   last_synced_at: string
+  claimed_by: string | null
+  claimed_at: string | null
+  claimed_by_username?: string | null
 }
 
 // === Tabella proposals ===

@@ -64,8 +64,9 @@ export function CreateRoomDialog() {
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div>
-            <label className="text-sm font-medium">Repository</label>
+            <label htmlFor="create-room-repo" className="text-sm font-medium">Repository</label>
             <Input
+              id="create-room-repo"
               placeholder="owner/repo (e.g. facebook/react)"
               value={repo}
               onChange={(e) => setRepo(e.target.value)}
@@ -73,7 +74,7 @@ export function CreateRoomDialog() {
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Labels</label>
+            <label id="create-room-labels" className="text-sm font-medium">Labels</label>
             <div className="mt-2 flex flex-wrap gap-2">
               {DEFAULT_LABELS.map((label) => (
                 <Badge

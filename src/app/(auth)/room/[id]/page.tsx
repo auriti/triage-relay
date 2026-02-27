@@ -10,27 +10,28 @@ export default async function RoomPage({
   const { id } = await params
   const supabase = await createClient()
 
-  // Fetch issue cachate
-  const { data: issues } = await supabase
-    .from('issues_cache')
-    .select('*')
-    .eq('room_id', id)
-    .eq('state', 'open')
-    .order('github_issue_number', { ascending: false })
+  // Auth già verificata dal parent layout
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch room labels
-  const { data: room } = await supabase
-    .from('rooms')
-    .select('labels')
-    .eq('id', id)
-    .single()
-
-  // Fetch issue con proposte pending
-  const { data: pendingProposals } = await supabase
-    .from('proposals')
-    .select('github_issue_number')
-    .eq('room_id', id)
-    .eq('status', 'pending')
+  // Fetch issue cachate + room labels + proposte pending in parallelo
+  const [{ data: issues }, { data: room }, { data: pendingProposals }] = await Promise.all([
+    supabase
+      .from('issues_cache')
+      .select('*')
+      .eq('room_id', id)
+      .eq('state', 'open')
+      .order('github_issue_number', { ascending: false }),
+    supabase
+      .from('rooms')
+      .select('labels')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('proposals')
+      .select('github_issue_number')
+      .eq('room_id', id)
+      .eq('status', 'pending'),
+  ])
 
   const pendingIssueNumbers = [...new Set(pendingProposals?.map((p) => p.github_issue_number) || [])]
 
@@ -40,6 +41,7 @@ export default async function RoomPage({
       initialIssues={issues || []}
       roomLabels={(room?.labels as string[]) || []}
       pendingProposalIssues={pendingIssueNumbers}
+      currentUserId={user!.id}
     />
   )
 }
