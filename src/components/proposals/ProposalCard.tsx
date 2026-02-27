@@ -11,7 +11,7 @@ import {
 import { ProposalActions } from './ProposalActions'
 import { AIBriefCard } from '@/components/triage/AIBriefCard'
 import { formatDate } from '@/lib/utils'
-import type { Proposal } from '@/types/database'
+import type { Proposal, ProposalWithTriager } from '@/types/database'
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-warning/20 text-warning',
@@ -28,7 +28,7 @@ const KIND_LABELS: Record<string, string> = {
 }
 
 interface ProposalCardProps {
-  proposal: Proposal
+  proposal: Proposal | ProposalWithTriager
   roomId: string
   isMaintainer: boolean
 }
@@ -36,6 +36,7 @@ interface ProposalCardProps {
 export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardProps) {
   const [isOpen, setIsOpen] = useState(false)
   const payload = proposal.payload as Record<string, unknown>
+  const triagerUsername = 'triager_username' in proposal ? proposal.triager_username : null
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -54,9 +55,12 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
                   {proposal.status}
                 </Badge>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {formatDate(proposal.created_at)}
-              </span>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                {triagerUsername && (
+                  <span className="text-foreground font-medium">@{triagerUsername}</span>
+                )}
+                <span>{formatDate(proposal.created_at)}</span>
+              </div>
             </div>
 
             {/* Preview */}

@@ -76,4 +76,10 @@ export interface RoomWithMembership extends Room {
   role: UserRole
   member_count?: number
   pending_proposals?: number
+  issue_count?: number
+}
+
+// Proposta con info del triager
+export interface ProposalWithTriager extends Proposal {
+  triager_username: string | null
 }

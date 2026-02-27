@@ -105,16 +105,28 @@ export async function getUserRooms(): Promise<RoomWithMembership[]> {
 
   if (!rooms) return []
 
-  // Fetch conteggio proposte pending per room
-  const { data: proposals } = await supabase
-    .from('proposals')
-    .select('room_id')
-    .in('room_id', roomIds)
-    .eq('status', 'pending')
+  // Fetch conteggio proposte pending e issue cachate per room
+  const [{ data: proposals }, { data: issuesCount }] = await Promise.all([
+    supabase
+      .from('proposals')
+      .select('room_id')
+      .in('room_id', roomIds)
+      .eq('status', 'pending'),
+    supabase
+      .from('issues_cache')
+      .select('room_id')
+      .in('room_id', roomIds)
+      .eq('state', 'open'),
+  ])
 
   const pendingCount: Record<string, number> = {}
   proposals?.forEach((p) => {
     pendingCount[p.room_id] = (pendingCount[p.room_id] || 0) + 1
+  })
+
+  const issueCountMap: Record<string, number> = {}
+  issuesCount?.forEach((i) => {
+    issueCountMap[i.room_id] = (issueCountMap[i.room_id] || 0) + 1
   })
 
   return rooms.map((room) => {
@@ -123,6 +135,7 @@ export async function getUserRooms(): Promise<RoomWithMembership[]> {
       ...room,
       role: membership?.role || 'triager',
       pending_proposals: pendingCount[room.id] || 0,
+      issue_count: issueCountMap[room.id] || 0,
     } as RoomWithMembership
   })
 }

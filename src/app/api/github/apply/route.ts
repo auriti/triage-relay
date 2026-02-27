@@ -1,6 +1,6 @@
 // API Route — Applica proposta su GitHub (solo maintainer)
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { addLabel, addComment, validateToken } from '@/lib/github'
+import { addLabel, addComment } from '@/lib/github'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -57,14 +57,6 @@ export async function POST(request: Request) {
     if (!ghToken) {
       return NextResponse.json(
         { error: 'GitHub token expired. Please re-login.' },
-        { status: 401 }
-      )
-    }
-
-    const { valid } = await validateToken(ghToken)
-    if (!valid) {
-      return NextResponse.json(
-        { error: 'GitHub token invalid. Please re-login.' },
         { status: 401 }
       )
     }

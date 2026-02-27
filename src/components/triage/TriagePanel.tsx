@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { AIBriefCard } from './AIBriefCard'
 import { ProposalForm } from './ProposalForm'
 import { toast } from 'sonner'
@@ -96,10 +98,14 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
                   </a>
                 </div>
               </div>
-              <div className="rounded-lg border border-border bg-muted/30 p-4">
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {issue.body || 'No description provided.'}
-                </pre>
+              <div className="rounded-lg border border-border bg-muted/30 p-4 prose prose-sm prose-invert max-w-none prose-headings:text-foreground prose-a:text-primary prose-code:text-orange-500 prose-pre:bg-background/50 prose-pre:border prose-pre:border-border prose-img:rounded-lg">
+                {issue.body ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {issue.body}
+                  </ReactMarkdown>
+                ) : (
+                  <p className="text-muted-foreground italic">No description provided.</p>
+                )}
               </div>
             </div>
 

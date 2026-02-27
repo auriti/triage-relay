@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProposalCard } from './ProposalCard'
-import type { Proposal, ProposalStatus } from '@/types/database'
+import type { Proposal, ProposalWithTriager, ProposalStatus } from '@/types/database'
 
 type FilterTab = 'pending' | 'approved' | 'rejected' | 'all'
 
 interface ProposalListProps {
-  proposals: Proposal[]
+  proposals: (Proposal | ProposalWithTriager)[]
   roomId: string
   isMaintainer: boolean
 }
