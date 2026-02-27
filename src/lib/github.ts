@@ -108,6 +108,24 @@ export async function addLabel(
   })
 }
 
+// Chiudi una issue (usato per duplicati)
+export async function closeIssue(
+  token: string,
+  owner: string,
+  repo: string,
+  issueNumber: number,
+  reason: 'completed' | 'not_planned' = 'not_planned'
+) {
+  const octokit = createOctokit(token)
+  await octokit.issues.update({
+    owner,
+    repo,
+    issue_number: issueNumber,
+    state: 'closed',
+    state_reason: reason,
+  })
+}
+
 // Posta un commento su una issue
 export async function addComment(
   token: string,

@@ -36,12 +36,18 @@ export default async function RoomLayout({
 
   if (!member) redirect('/dashboard')
 
-  // Conta proposte pending
-  const { count: pendingCount } = await supabase
-    .from('proposals')
-    .select('id', { count: 'exact', head: true })
-    .eq('room_id', id)
-    .eq('status', 'pending')
+  // Conta proposte per stato e issue cachate
+  const [
+    { count: pendingCount },
+    { count: appliedCount },
+    { count: rejectedCount },
+    { count: issueCount },
+  ] = await Promise.all([
+    supabase.from('proposals').select('id', { count: 'exact', head: true }).eq('room_id', id).eq('status', 'pending'),
+    supabase.from('proposals').select('id', { count: 'exact', head: true }).eq('room_id', id).eq('status', 'applied'),
+    supabase.from('proposals').select('id', { count: 'exact', head: true }).eq('room_id', id).eq('status', 'rejected'),
+    supabase.from('issues_cache').select('id', { count: 'exact', head: true }).eq('room_id', id).eq('state', 'open'),
+  ])
 
   return (
     <div className="flex">
@@ -49,6 +55,11 @@ export default async function RoomLayout({
         room={room}
         role={member.role}
         pendingCount={pendingCount || 0}
+        stats={{
+          issues: issueCount || 0,
+          applied: appliedCount || 0,
+          rejected: rejectedCount || 0,
+        }}
       />
       <div className="flex-1 overflow-auto">{children}</div>
     </div>

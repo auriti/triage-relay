@@ -59,7 +59,7 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
                 {triagerUsername && (
                   <span className="text-foreground font-medium">@{triagerUsername}</span>
                 )}
-                <span>{formatDate(proposal.created_at)}</span>
+                <span suppressHydrationWarning>{formatDate(proposal.created_at)}</span>
               </div>
             </div>
 

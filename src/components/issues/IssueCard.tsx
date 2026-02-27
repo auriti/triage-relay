@@ -23,7 +23,16 @@ export function IssueCard({ issue, isSelected, onClick, hasPendingProposal }: Is
           : 'border-border bg-card hover:border-primary/20 hover:bg-card-hover'
       }`}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start gap-3">
+        {/* Avatar autore */}
+        {issue.author_login && (
+          <img
+            src={`https://github.com/${issue.author_login}.png?size=40`}
+            alt={issue.author_login}
+            className="mt-0.5 h-8 w-8 shrink-0 rounded-full bg-muted"
+            loading="lazy"
+          />
+        )}
         <div className="min-w-0 flex-1">
           {/* Header: numero + badge */}
           <div className="flex items-center gap-2">
@@ -51,7 +60,9 @@ export function IssueCard({ issue, isSelected, onClick, hasPendingProposal }: Is
                 {issue.author_login}
               </span>
             )}
-            {issue.created_at && <span>{formatDate(issue.created_at)}</span>}
+            {issue.created_at && (
+              <span suppressHydrationWarning>{formatDate(issue.created_at)}</span>
+            )}
             {issue.comments_count > 0 && (
               <span className="flex items-center gap-1">
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

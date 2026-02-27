@@ -1,6 +1,6 @@
 // API Route — Applica proposta su GitHub (solo maintainer)
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { addLabel, addComment } from '@/lib/github'
+import { addLabel, addComment, closeIssue } from '@/lib/github'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -103,9 +103,10 @@ export async function POST(request: Request) {
       case 'duplicate': {
         const dupOf = payload.duplicate_of as number
         const reason = payload.reason as string || ''
-        const body = `Duplicate of #${dupOf}${reason ? `: ${reason}` : ''}`
+        const body = `Duplicate of #${dupOf}${reason ? `\n\n${reason}` : ''}`
         await addComment(ghToken, repo_owner, repo_name, issueNumber, body)
-        applied.push('comment')
+        await closeIssue(ghToken, repo_owner, repo_name, issueNumber, 'not_planned')
+        applied.push('comment', 'closed')
         break
       }
       default:

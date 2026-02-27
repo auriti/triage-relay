@@ -6,9 +6,14 @@ interface SidebarProps {
   room: Room
   role: string
   pendingCount: number
+  stats?: {
+    issues: number
+    applied: number
+    rejected: number
+  }
 }
 
-export function Sidebar({ room, role, pendingCount }: SidebarProps) {
+export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
   const labels = (room.labels as string[]) || []
 
   return (
@@ -66,6 +71,33 @@ export function Sidebar({ room, role, pendingCount }: SidebarProps) {
 
         {/* Divider */}
         <div className="mb-4 border-t border-border" />
+
+        {/* Statistiche triage */}
+        {stats && (
+          <div className="mb-5">
+            <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Stats
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-md bg-card p-2 text-center">
+                <p className="text-lg font-bold text-foreground">{stats.issues}</p>
+                <p className="text-[10px] text-muted-foreground">Issues</p>
+              </div>
+              <div className="rounded-md bg-card p-2 text-center">
+                <p className="text-lg font-bold text-warning">{pendingCount}</p>
+                <p className="text-[10px] text-muted-foreground">Pending</p>
+              </div>
+              <div className="rounded-md bg-card p-2 text-center">
+                <p className="text-lg font-bold text-primary">{stats.applied}</p>
+                <p className="text-[10px] text-muted-foreground">Applied</p>
+              </div>
+              <div className="rounded-md bg-card p-2 text-center">
+                <p className="text-lg font-bold text-destructive">{stats.rejected}</p>
+                <p className="text-[10px] text-muted-foreground">Rejected</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Labels */}
         <div className="mb-5">
