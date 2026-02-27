@@ -117,60 +117,79 @@
   opacity: 0;
 }
 
-/* Inverted border-radius — angoli concavi dove due superfici si incontrano */
-.notch-tl::before,
-.notch-tr::before,
-.notch-bl::after,
-.notch-br::after {
-  content: '';
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: transparent;
-}
+/*
+ * Inverted border-radius (angoli concavi)
+ * Tecnica: radial-gradient su pseudo-elements — crea un ritaglio circolare
+ * perfetto senza dipendere da box-shadow.
+ * Ref: css-shape.com/inverted-radius/
+ *
+ * .inv-section + .inv-inner → angoli invertiti in alto (sezione entra)
+ * .inv-section-bottom + .inv-inner-bottom → angoli invertiti in basso (sezione esce)
+ *
+ * --inv-r: dimensione del raggio (default 24px)
+ * --inv-fg: colore della sezione col rounding
+ */
 
-.notch-tl::before {
-  top: -12px;
-  left: 0;
-  border-bottom-left-radius: 12px;
-  box-shadow: 0 6px 0 0 var(--background);
-}
-
-.notch-tr::before {
-  top: -12px;
-  right: 0;
-  border-bottom-right-radius: 12px;
-  box-shadow: 0 6px 0 0 var(--background);
-}
-
-.notch-bl::after {
-  bottom: -12px;
-  left: 0;
-  border-top-left-radius: 12px;
-  box-shadow: 0 -6px 0 0 var(--card);
-}
-
-.notch-br::after {
-  bottom: -12px;
-  right: 0;
-  border-top-right-radius: 12px;
-  box-shadow: 0 -6px 0 0 var(--card);
-}
-
-/* Variante: notch per il divider tra sezioni (hero → features) */
-.section-notch {
+.inv-section {
+  --inv-r: 24px;
+  --inv-fg: var(--card);
   position: relative;
 }
 
-.section-notch::before {
+.inv-section > .inv-inner {
+  border-radius: var(--inv-r) var(--inv-r) 0 0;
+  background: var(--inv-fg);
+  position: relative;
+}
+
+/* Angoli invertiti — radial-gradient con ritaglio circolare */
+.inv-section > .inv-inner::before,
+.inv-section > .inv-inner::after {
   content: '';
   position: absolute;
-  top: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 16px;
-  background: var(--card);
-  border-radius: 0 0 24px 24px;
-  opacity: 0.3;
+  top: calc(-1 * var(--inv-r));
+  width: var(--inv-r);
+  height: var(--inv-r);
+}
+
+.inv-section > .inv-inner::before {
+  left: 0;
+  background: radial-gradient(circle at 100% 0, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+}
+
+.inv-section > .inv-inner::after {
+  right: 0;
+  background: radial-gradient(circle at 0 0, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+}
+
+/* Variante inferiore */
+.inv-section-bottom {
+  --inv-r: 24px;
+  --inv-fg: var(--card);
+  position: relative;
+}
+
+.inv-section-bottom > .inv-inner-bottom {
+  border-radius: 0 0 var(--inv-r) var(--inv-r);
+  background: var(--inv-fg);
+  position: relative;
+}
+
+.inv-section-bottom > .inv-inner-bottom::before,
+.inv-section-bottom > .inv-inner-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: calc(-1 * var(--inv-r));
+  width: var(--inv-r);
+  height: var(--inv-r);
+}
+
+.inv-section-bottom > .inv-inner-bottom::before {
+  left: 0;
+  background: radial-gradient(circle at 100% 100%, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+}
+
+.inv-section-bottom > .inv-inner-bottom::after {
+  right: 0;
+  background: radial-gradient(circle at 0 100%, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
 }

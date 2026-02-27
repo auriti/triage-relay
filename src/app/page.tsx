@@ -114,20 +114,22 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it works — con transizione sottile */}
-      <section className="relative border-t border-border bg-card/30 py-20 section-notch">
-        <div className="mx-auto max-w-3xl px-6">
-          <h2 className="mb-12 text-center text-2xl font-bold">How it works</h2>
-          <div className="grid gap-8 sm:grid-cols-3">
-            {STEPS.map((step) => (
-              <div key={step.num} className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-sm font-bold text-primary">
-                  {step.num}
+      {/* How it works — con angoli invertiti */}
+      <section className="inv-section">
+        <div className="inv-inner py-20">
+          <div className="mx-auto max-w-3xl px-6">
+            <h2 className="mb-12 text-center text-2xl font-bold">How it works</h2>
+            <div className="grid gap-8 sm:grid-cols-3">
+              {STEPS.map((step) => (
+                <div key={step.num} className="text-center">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-sm font-bold text-primary">
+                    {step.num}
+                  </div>
+                  <h3 className="mb-1 font-semibold">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground">{step.desc}</p>
                 </div>
-                <h3 className="mb-1 font-semibold">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
