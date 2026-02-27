@@ -57,7 +57,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative mx-auto max-w-3xl px-6 pt-32 pb-20 text-center">
+      <section className="relative mx-auto max-w-3xl px-6 pt-32 pb-28 text-center">
         {/* Glow dietro il testo */}
         <div className="pointer-events-none absolute inset-0 -top-20 flex items-center justify-center">
           <div className="h-64 w-64 rounded-full bg-primary/8 blur-[100px]" />
@@ -96,27 +96,33 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="mx-auto max-w-5xl px-6 pb-20">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="group rounded-xl border border-border bg-card/50 p-6 transition-all hover:border-primary/30 hover:bg-card"
-            >
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                {f.icon}
-              </div>
-              <h3 className="mb-2 font-semibold">{f.title}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+      {/* Pannello principale — Features + How it works con angoli invertiti */}
+      <div className="inv-section">
+        <div className="inv-inner py-16">
+          {/* Features */}
+          <div className="mx-auto max-w-5xl px-6">
+            <div className="grid gap-4 sm:grid-cols-3">
+              {FEATURES.map((f) => (
+                <div
+                  key={f.title}
+                  className="group rounded-xl border border-border/50 bg-background/30 p-6 transition-all hover:border-primary/30 hover:bg-background/50"
+                >
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    {f.icon}
+                  </div>
+                  <h3 className="mb-2 font-semibold">{f.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{f.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* How it works — con angoli invertiti */}
-      <section className="inv-section">
-        <div className="inv-inner py-20">
+          {/* Separatore sottile */}
+          <div className="mx-auto my-14 max-w-5xl px-6">
+            <div className="border-t border-border/30" />
+          </div>
+
+          {/* How it works */}
           <div className="mx-auto max-w-3xl px-6">
             <h2 className="mb-12 text-center text-2xl font-bold">How it works</h2>
             <div className="grid gap-8 sm:grid-cols-3">
@@ -132,10 +138,10 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* CTA finale */}
-      <section className="py-20 text-center">
+      <section className="pt-8 pb-20 text-center">
         <div className="mx-auto max-w-xl px-6">
           <h2 className="text-2xl font-bold">Ready to lighten the load?</h2>
           <p className="mt-3 text-muted-foreground">

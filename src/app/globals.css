@@ -119,77 +119,75 @@
 
 /*
  * Inverted border-radius (angoli concavi)
- * Tecnica: radial-gradient su pseudo-elements — crea un ritaglio circolare
- * perfetto senza dipendere da box-shadow.
+ * Tecnica: radial-gradient con background multipli su pseudo-elements.
+ * Ogni pseudo gestisce una coppia di angoli (sx + dx).
  * Ref: css-shape.com/inverted-radius/
  *
- * .inv-section + .inv-inner → angoli invertiti in alto (sezione entra)
- * .inv-section-bottom + .inv-inner-bottom → angoli invertiti in basso (sezione esce)
+ * Uso:
+ *   <div class="inv-section">
+ *     <div class="inv-inner">contenuto</div>
+ *   </div>
  *
- * --inv-r: dimensione del raggio (default 24px)
- * --inv-fg: colore della sezione col rounding
+ * ::before → coppia superiore, ::after → coppia inferiore.
+ * Modificatori: .inv-top-only, .inv-bottom-only
  */
 
 .inv-section {
-  --inv-r: 24px;
+  --inv-r: 48px;
   --inv-fg: var(--card);
   position: relative;
 }
 
 .inv-section > .inv-inner {
-  border-radius: var(--inv-r) var(--inv-r) 0 0;
+  border-radius: var(--inv-r);
   background: var(--inv-fg);
   position: relative;
 }
 
-/* Angoli invertiti — radial-gradient con ritaglio circolare */
-.inv-section > .inv-inner::before,
-.inv-section > .inv-inner::after {
+/* Coppia superiore — ::before full-width, 2 background posizionati agli angoli */
+.inv-section > .inv-inner::before {
   content: '';
   position: absolute;
   top: calc(-1 * var(--inv-r));
-  width: var(--inv-r);
-  height: var(--inv-r);
-}
-
-.inv-section > .inv-inner::before {
   left: 0;
-  background: radial-gradient(circle at 100% 0, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
-}
-
-.inv-section > .inv-inner::after {
   right: 0;
-  background: radial-gradient(circle at 0 0, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+  height: var(--inv-r);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 100% 0, transparent calc(var(--inv-r) - 0.5px), var(--inv-fg) var(--inv-r))
+      left bottom / var(--inv-r) var(--inv-r) no-repeat,
+    radial-gradient(circle at 0 0, transparent calc(var(--inv-r) - 0.5px), var(--inv-fg) var(--inv-r))
+      right bottom / var(--inv-r) var(--inv-r) no-repeat;
 }
 
-/* Variante inferiore */
-.inv-section-bottom {
-  --inv-r: 24px;
-  --inv-fg: var(--card);
-  position: relative;
-}
-
-.inv-section-bottom > .inv-inner-bottom {
-  border-radius: 0 0 var(--inv-r) var(--inv-r);
-  background: var(--inv-fg);
-  position: relative;
-}
-
-.inv-section-bottom > .inv-inner-bottom::before,
-.inv-section-bottom > .inv-inner-bottom::after {
+/* Coppia inferiore — ::after full-width, 2 background posizionati agli angoli */
+.inv-section > .inv-inner::after {
   content: '';
   position: absolute;
   bottom: calc(-1 * var(--inv-r));
-  width: var(--inv-r);
-  height: var(--inv-r);
-}
-
-.inv-section-bottom > .inv-inner-bottom::before {
   left: 0;
-  background: radial-gradient(circle at 100% 100%, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+  right: 0;
+  height: var(--inv-r);
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 100% 100%, transparent calc(var(--inv-r) - 0.5px), var(--inv-fg) var(--inv-r))
+      left top / var(--inv-r) var(--inv-r) no-repeat,
+    radial-gradient(circle at 0 100%, transparent calc(var(--inv-r) - 0.5px), var(--inv-fg) var(--inv-r))
+      right top / var(--inv-r) var(--inv-r) no-repeat;
 }
 
-.inv-section-bottom > .inv-inner-bottom::after {
-  right: 0;
-  background: radial-gradient(circle at 0 100%, transparent var(--inv-r), var(--inv-fg) var(--inv-r));
+/* Solo angoli superiori */
+.inv-section > .inv-inner.inv-top-only {
+  border-radius: var(--inv-r) var(--inv-r) 0 0;
+}
+.inv-section > .inv-inner.inv-top-only::after {
+  display: none;
+}
+
+/* Solo angoli inferiori */
+.inv-section > .inv-inner.inv-bottom-only {
+  border-radius: 0 0 var(--inv-r) var(--inv-r);
+}
+.inv-section > .inv-inner.inv-bottom-only::before {
+  display: none;
 }
