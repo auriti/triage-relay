@@ -192,7 +192,7 @@ export function ProposalForm({
       <Button
         onClick={handleSubmit}
         disabled={isPending}
-        className="w-full bg-primary text-primary-foreground hover:bg-orange-600"
+        className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
       >
         {isPending ? 'Submitting...' : 'Submit Proposal'}
       </Button>

@@ -46,7 +46,7 @@ export function Header({ user }: { user: User }) {
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-full border border-transparent px-1.5 py-1 transition-colors hover:border-border hover:bg-accent">
+          <DropdownMenuTrigger suppressHydrationWarning className="flex items-center gap-2.5 rounded-full border border-transparent px-1.5 py-1 transition-colors hover:border-border hover:bg-accent">
             <Avatar className="h-7 w-7">
               <AvatarImage src={avatarUrl} alt={username} />
               <AvatarFallback className="bg-primary/10 text-primary text-xs">

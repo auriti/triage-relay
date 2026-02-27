@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,10 +15,22 @@ import { Input } from '@/components/ui/input'
 import { joinRoom } from '@/app/actions/rooms'
 import { toast } from 'sonner'
 
-export function JoinRoomDialog() {
+interface JoinRoomDialogProps {
+  initialRoomId?: string
+}
+
+export function JoinRoomDialog({ initialRoomId }: JoinRoomDialogProps) {
   const [open, setOpen] = useState(false)
-  const [roomId, setRoomId] = useState('')
+  const [roomId, setRoomId] = useState(initialRoomId || '')
   const [isPending, startTransition] = useTransition()
+
+  // Apri automaticamente se c'è un initialRoomId
+  useEffect(() => {
+    if (initialRoomId) {
+      setRoomId(initialRoomId)
+      setOpen(true)
+    }
+  }, [initialRoomId])
 
   function handleSubmit() {
     if (!roomId.trim()) return
@@ -44,12 +56,13 @@ export function JoinRoomDialog() {
         <DialogHeader>
           <DialogTitle>Join a Triage Room</DialogTitle>
           <DialogDescription>
-            Enter the room ID to join as a triage volunteer.
+            Enter the room ID or use an invite link to join as a triage volunteer.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <label className="text-sm font-medium">Room ID</label>
+          <label htmlFor="join-room-id" className="text-sm font-medium">Room ID</label>
           <Input
+            id="join-room-id"
             placeholder="Paste the room ID here"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}

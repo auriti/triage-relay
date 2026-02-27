@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { CopyJoinLink } from '@/components/rooms/CopyJoinLink'
 import type { Room } from '@/types/database'
 
 interface SidebarProps {
@@ -113,10 +114,13 @@ export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
           </div>
         </div>
 
-        {/* Room ID — in fondo */}
+        {/* Invita + Room ID — in fondo */}
         <div className="mt-auto">
           <div className="border-t border-border pt-4">
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            {role === 'maintainer' && (
+              <CopyJoinLink roomId={room.id} />
+            )}
+            <p className="mt-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Room ID
             </p>
             <code className="block rounded-md bg-card px-2 py-1.5 text-[10px] text-muted-foreground break-all leading-relaxed">

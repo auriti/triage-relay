@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { DEFAULT_LABELS } from '@/lib/constants'
 import type { Room, RoomWithMembership } from '@/types/database'
 
 // Crea una nuova room e auto-join come maintainer
@@ -21,11 +22,7 @@ export async function createRoom(repoFullName: string, labels: string[]) {
       repo_name,
       display_name: repoFullName,
       created_by: user.id,
-      labels: labels.length > 0 ? labels : [
-        'bug', 'enhancement', 'feature', 'question', 'needs-info', 'duplicate',
-        'wontfix', 'good first issue', 'help wanted', 'documentation', 'performance',
-        'security', 'breaking change', 'regression', 'stale',
-      ],
+      labels: labels.length > 0 ? labels : DEFAULT_LABELS,
     })
     .select()
     .single()

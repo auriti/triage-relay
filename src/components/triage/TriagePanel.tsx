@@ -114,7 +114,7 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
               <Button
                 onClick={generateBrief}
                 disabled={loading}
-                className="w-full bg-primary text-primary-foreground hover:bg-orange-600"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
                 size="lg"
               >
                 {loading ? 'Generating...' : 'Generate AI Brief'}

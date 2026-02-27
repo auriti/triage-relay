@@ -3,6 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { updateProposalStatus } from '@/app/actions/proposals'
 import { toast } from 'sonner'
 import type { Proposal } from '@/types/database'
@@ -19,7 +30,6 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
   async function handleApply() {
     setLoading('apply')
     try {
-      // Chiama l'API per applicare su GitHub
       const res = await fetch('/api/github/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,7 +76,7 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
       <Button
         onClick={handleApply}
         disabled={!!loading}
-        className="bg-primary text-primary-foreground hover:bg-orange-600"
+        className="bg-primary text-primary-foreground hover:bg-primary-hover"
         size="sm"
       >
         {loading === 'apply' ? 'Applying...' : 'Approve & Apply'}
@@ -78,14 +88,34 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
       >
         Copy
       </Button>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={handleReject}
-        disabled={!!loading}
-      >
-        {loading === 'reject' ? 'Rejecting...' : 'Reject'}
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="destructive"
+            size="sm"
+            disabled={!!loading}
+          >
+            {loading === 'reject' ? 'Rejecting...' : 'Reject'}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject this proposal?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will reject the triage proposal for issue #{proposal.github_issue_number}. The triager will see the rejected status.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReject}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              Reject
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

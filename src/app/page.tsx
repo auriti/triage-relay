@@ -80,7 +80,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link href="/login">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-orange-600 px-8 text-base shadow-lg shadow-primary/20">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary-hover px-8 text-base shadow-lg shadow-primary/20">
                 Start triaging
                 <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -148,7 +148,7 @@ export default function LandingPage() {
             Your community wants to help. Give them a safe way to do it.
           </p>
           <Link href="/login" className="mt-6 inline-block">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-orange-600 px-8 shadow-lg shadow-primary/20">
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary-hover px-8 shadow-lg shadow-primary/20">
               Get started — it&apos;s free
             </Button>
           </Link>

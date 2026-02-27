@@ -4,7 +4,12 @@ import { RoomCard } from '@/components/rooms/RoomCard'
 import { CreateRoomDialog } from '@/components/rooms/CreateRoomDialog'
 import { JoinRoomDialog } from '@/components/rooms/JoinRoomDialog'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ join?: string }>
+}) {
+  const { join: joinRoomId } = await searchParams
   const rooms = await getUserRooms()
 
   return (
@@ -18,7 +23,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <JoinRoomDialog />
+          <JoinRoomDialog initialRoomId={joinRoomId} />
           <CreateRoomDialog />
         </div>
       </div>

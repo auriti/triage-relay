@@ -36,7 +36,7 @@ export default function LoginPage() {
         <div className="rounded-xl border border-border bg-card p-6">
           <Button
             onClick={handleLogin}
-            className="w-full bg-primary text-primary-foreground hover:bg-orange-600 shadow-lg shadow-primary/10"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/10"
             size="lg"
           >
             <svg className="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

@@ -15,12 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createRoom } from '@/app/actions/rooms'
 import { toast } from 'sonner'
-
-const DEFAULT_LABELS = [
-  'bug', 'enhancement', 'feature', 'question', 'needs-info', 'duplicate',
-  'wontfix', 'good first issue', 'help wanted', 'documentation', 'performance',
-  'security', 'breaking change', 'regression', 'stale',
-]
+import { DEFAULT_LABELS } from '@/lib/constants'
 
 export function CreateRoomDialog() {
   const [open, setOpen] = useState(false)
@@ -56,7 +51,7 @@ export function CreateRoomDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary text-primary-foreground hover:bg-orange-600">
+        <Button className="bg-primary text-primary-foreground hover:bg-primary-hover">
           Create Room
         </Button>
       </DialogTrigger>
@@ -100,7 +95,7 @@ export function CreateRoomDialog() {
           <Button
             onClick={handleSubmit}
             disabled={isPending || !repo}
-            className="bg-primary text-primary-foreground hover:bg-orange-600"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover"
           >
             {isPending ? 'Creating...' : 'Create Room'}
           </Button>

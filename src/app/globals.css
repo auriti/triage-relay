@@ -47,6 +47,7 @@
   --radius-4xl: calc(var(--radius) + 16px);
 
   /* Colori custom per Tailwind utilities */
+  --color-primary-hover: #e8853d;
   --color-orange-500: #FF9B51;
   --color-orange-600: #e8853d;
   --color-slate-400: #BFC9D1;
