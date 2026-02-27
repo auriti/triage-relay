@@ -87,7 +87,7 @@ export default function LandingPage() {
                 </svg>
               </Button>
             </Link>
-            <a href="https://github.com/auriti-web-design/triage-relay" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/auriti/triage-relay" target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="lg" className="border-border text-muted-foreground">
                 View source
               </Button>
@@ -161,7 +161,7 @@ export default function LandingPage() {
           </a>
           {' '}· Open source on{' '}
           <a
-            href="https://github.com/auriti-web-design/triage-relay"
+            href="https://github.com/auriti/triage-relay"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
