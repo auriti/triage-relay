@@ -56,6 +56,7 @@ export async function generateTriageBrief(params: {
     return brief
   } catch (error) {
     console.error('[GROQ]', error)
-    return EMPTY_BRIEF
+    // Rilancia l'errore per consentire handling specifico nella route
+    throw error
   }
 }

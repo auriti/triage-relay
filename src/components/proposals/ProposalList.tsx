@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ProposalCard } from './ProposalCard'
 import type { Proposal, ProposalWithTriager, ProposalStatus } from '@/types/database'
 
-type FilterTab = 'pending' | 'approved' | 'rejected' | 'all'
+type FilterTab = 'pending' | 'applied' | 'rejected' | 'all'
 
 interface ProposalListProps {
   proposals: (Proposal | ProposalWithTriager)[]
@@ -30,7 +30,7 @@ export function ProposalList({ proposals, roomId, isMaintainer }: ProposalListPr
           <TabsTrigger value="pending">
             Pending {pendingCount > 0 && `(${pendingCount})`}
           </TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
+          <TabsTrigger value="applied">Applied</TabsTrigger>
           <TabsTrigger value="rejected">Rejected</TabsTrigger>
           <TabsTrigger value="all">All</TabsTrigger>
         </TabsList>

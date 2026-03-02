@@ -66,11 +66,29 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('[TRIAGE_BRIEF]', error)
 
-    // Se Groq è down → 503
-    if (error instanceof Error && error.message.includes('rate')) {
+    const msg = error instanceof Error ? error.message : ''
+
+    // Rate limit Groq → 429
+    if (msg.includes('rate') || msg.includes('429')) {
       return NextResponse.json(
         { error: 'AI rate limit reached. Try again in a minute.' },
         { status: 429 }
+      )
+    }
+
+    // Auth Groq non valida → 503
+    if (msg.includes('401') || msg.includes('auth') || msg.includes('key')) {
+      return NextResponse.json(
+        { error: 'AI service misconfigured. Contact the maintainer.' },
+        { status: 503 }
+      )
+    }
+
+    // JSON parse error → 502
+    if (msg.includes('JSON') || msg.includes('parse')) {
+      return NextResponse.json(
+        { error: 'AI returned invalid response. Try again.' },
+        { status: 502 }
       )
     }
 

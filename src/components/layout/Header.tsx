@@ -1,6 +1,5 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -20,10 +19,8 @@ export function Header({ user }: { user: User }) {
   const avatarUrl = meta?.avatar_url
 
   async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    // Elimina il cookie gh_token
-    document.cookie = 'gh_token=; path=/; max-age=0'
+    // Logout via server route — cancella cookie httpOnly gh_token
+    await fetch('/auth/logout', { method: 'POST' })
     router.push('/login')
   }
 
