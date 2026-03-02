@@ -2,40 +2,51 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
+/* SVG logo riutilizzabile per navbar, sidebar mock e footer */
+const Logo = ({ className = 'h-6 w-6' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+    <rect width="32" height="32" rx="6" fill="#25343F" />
+    <path d="M16 4 L28 16 L16 28 L4 16 Z" fill="#FF9B51" />
+  </svg>
+)
+
 const FEATURES = [
   {
+    eyebrow: 'AI-Powered',
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z" />
       </svg>
     ),
-    title: 'AI-Powered Briefs',
+    title: 'Smart Briefs',
     description: 'Instant summaries, duplicate detection, and draft responses. AI does the heavy lifting — humans make the calls.',
   },
   {
+    eyebrow: 'Zero Risk',
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
       </svg>
     ),
-    title: 'Zero-Risk Proposals',
+    title: 'Safe Proposals',
     description: 'Volunteers suggest labels and comments. No push access needed — maintainers stay in full control.',
   },
   {
+    eyebrow: 'One Click',
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
       </svg>
     ),
-    title: 'One-Click Apply',
+    title: 'Instant Apply',
     description: 'Review proposals in your inbox. One click to label, comment, or close — your backlog becomes a decision queue.',
   },
 ]
 
 const STEPS = [
-  { num: '01', title: 'Connect', desc: 'Link any GitHub repository and invite your community.' },
-  { num: '02', title: 'Triage', desc: 'Volunteers generate AI briefs and propose actions on open issues.' },
-  { num: '03', title: 'Apply', desc: 'Maintainers review proposals and apply them to GitHub instantly.' },
+  { num: '01', title: 'Connect', desc: 'Link any GitHub repository and invite your community.', role: 'Maintainer' },
+  { num: '02', title: 'Triage', desc: 'Volunteers generate AI briefs and propose actions on open issues.', role: 'Volunteer' },
+  { num: '03', title: 'Apply', desc: 'Maintainers review proposals and apply them to GitHub instantly.', role: 'Maintainer' },
 ]
 
 export default function LandingPage() {
@@ -45,7 +56,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
-            <span className="text-primary text-lg">&#9670;</span>
+            <Logo className="h-6 w-6" />
             Triage Relay
           </Link>
           <Link href="/login">
@@ -58,27 +69,34 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="relative mx-auto max-w-3xl px-6 pt-32 pb-24 text-center">
-        {/* Glow */}
+        {/* Glow doppio strato — amplificato per impatto visivo */}
         <div className="pointer-events-none absolute inset-0 -top-20 flex items-center justify-center">
-          <div className="h-64 w-64 rounded-full bg-primary/8 blur-[100px]" />
+          <div className="h-80 w-80 rounded-full bg-primary/10 blur-[120px]" />
+          <div className="absolute h-40 w-40 rounded-full bg-primary/20 blur-[60px]" />
         </div>
 
         <div className="relative">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs text-muted-foreground">
+          {/* Badge — animazione staggered 1 */}
+          <div className="hero-animate hero-delay-1 mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs text-muted-foreground">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             Built for the DEV Weekend Challenge
           </div>
 
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+          {/* Titolo — animazione staggered 2 */}
+          <h1 className="hero-animate hero-delay-2 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             Triage is a{' '}
             <span className="bg-gradient-to-r from-primary to-[#ffb980] bg-clip-text text-transparent">
               team sport
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">
+
+          {/* Paragrafo — animazione staggered 3 */}
+          <p className="hero-animate hero-delay-3 mx-auto mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">
             Help open-source maintainers manage their backlog — without needing push access.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-3">
+
+          {/* CTA — animazione staggered 4 */}
+          <div className="hero-animate hero-delay-4 mt-8 flex items-center justify-center gap-3">
             <Link href="/login">
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary-hover px-8 text-base shadow-lg shadow-primary/20">
                 Start triaging
@@ -109,12 +127,12 @@ export default function LandingPage() {
             <span className="ml-2 text-[10px] text-muted-foreground/50">triage-relay.vercel.app</span>
           </div>
 
-          {/* Contenuto mock — 2 colonne */}
+          {/* Contenuto mock — 3 colonne */}
           <div className="grid lg:grid-cols-[200px_1fr_280px] gap-0">
             {/* Sidebar mock */}
             <div className="hidden lg:block border-r border-border/30 p-4 space-y-3">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground/80">
-                <span className="text-primary">&#9670;</span>
+                <Logo className="h-4 w-4" />
                 facebook/react
               </div>
               <div className="rounded bg-primary/10 px-2.5 py-1.5 text-[10px] text-primary font-medium">Issues</div>
@@ -197,6 +215,24 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Trust signal — numeri di social proof */}
+      <div className="mx-auto max-w-3xl px-6 py-8">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <div className="text-2xl font-bold text-foreground">500+</div>
+            <div className="text-xs text-muted-foreground">Issues per repo</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-primary">&lt;2s</div>
+            <div className="text-xs text-muted-foreground">AI brief generation</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-foreground">100%</div>
+            <div className="text-xs text-muted-foreground">Maintainer control</div>
+          </div>
+        </div>
+      </div>
+
       {/* Pannello principale — Features + How it works con angoli invertiti */}
       <div className="inv-section">
         <div className="inv-inner py-16">
@@ -208,6 +244,8 @@ export default function LandingPage() {
                   key={f.title}
                   className="group rounded-xl border border-border/50 bg-background/30 p-6 transition-all hover:border-primary/30 hover:bg-background/50"
                 >
+                  {/* Eyebrow label sopra la card */}
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-primary/60">{f.eyebrow}</p>
                   <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     {f.icon}
                   </div>
@@ -238,6 +276,10 @@ export default function LandingPage() {
                   </div>
                   <h3 className="mb-1 font-semibold">{step.title}</h3>
                   <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  {/* Badge ruolo sotto ogni step */}
+                  <span className="mt-2 inline-block rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[10px] font-medium text-primary">
+                    {step.role}
+                  </span>
                 </div>
               ))}
             </div>
@@ -280,27 +322,37 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-6">
-        <div className="mx-auto max-w-5xl px-6 text-center text-xs text-muted-foreground">
-          Built for the{' '}
-          <a
-            href="https://dev.to/devteam/happening-now-dev-weekend-challenge-submissions-due-march-2-at-759am-utc-5fg8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            DEV Weekend Challenge
-          </a>
-          {' '}· Open source on{' '}
-          <a
-            href="https://github.com/auriti/triage-relay"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            GitHub
-          </a>
+      {/* Footer migliorato con navigazione e logo */}
+      <footer className="border-t border-border py-8">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            {/* Logo e nome nel footer */}
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Logo className="h-5 w-5" />
+              Triage Relay
+            </div>
+            {/* Link al DEV Weekend Challenge e GitHub — mantenuti */}
+            <div className="text-xs text-muted-foreground">
+              Built for the{' '}
+              <a
+                href="https://dev.to/devteam/happening-now-dev-weekend-challenge-submissions-due-march-2-at-759am-utc-5fg8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                DEV Weekend Challenge
+              </a>
+              {' '}· Open source on{' '}
+              <a
+                href="https://github.com/auriti/triage-relay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
