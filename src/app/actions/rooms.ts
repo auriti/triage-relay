@@ -29,7 +29,7 @@ export async function createRoom(repoFullName: string, labels: string[]) {
     .insert({
       repo_owner,
       repo_name,
-      display_name: repoFullName,
+      display_name: `${repo_owner}/${repo_name}`,
       created_by: user.id,
       labels: labels.length > 0 ? labels : DEFAULT_LABELS,
     })

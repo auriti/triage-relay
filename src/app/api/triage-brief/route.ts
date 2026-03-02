@@ -54,10 +54,16 @@ export async function POST(request: Request) {
       title: i.title,
     }))
 
+    // Sanitizza e tronca input — protezione prompt injection e lunghezza
+    const MAX_TITLE_LEN = 256
+    const MAX_BODY_LEN = 4000
+    const safeTitle = typeof issueTitle === 'string' ? issueTitle.slice(0, MAX_TITLE_LEN) : ''
+    const safeBody = typeof issueBody === 'string' ? issueBody.slice(0, MAX_BODY_LEN) : ''
+
     // Genera brief AI
     const brief = await generateTriageBrief({
-      issueTitle,
-      issueBody: issueBody || '',
+      issueTitle: safeTitle,
+      issueBody: safeBody,
       availableLabels,
       existingIssues,
     })

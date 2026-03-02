@@ -28,6 +28,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Proposal not found' }, { status: 404 })
     }
 
+    // Impedisci re-apply di proposte già processate
+    if (proposal.status !== 'pending') {
+      return NextResponse.json(
+        { error: `Cannot apply a proposal with status "${proposal.status}"` },
+        { status: 409 }
+      )
+    }
+
     // Verifica ruolo maintainer
     const { data: member } = await supabase
       .from('room_members')

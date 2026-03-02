@@ -80,17 +80,19 @@ export function ProposalForm({
             }
             payload = { kind: 'comment', comment }
             break
-          case 'duplicate':
-            if (!duplicateOf) {
-              toast.error('Enter the duplicate issue number')
+          case 'duplicate': {
+            const dupNum = parseInt(duplicateOf, 10)
+            if (!duplicateOf || isNaN(dupNum) || dupNum <= 0) {
+              toast.error('Enter a valid positive issue number')
               return
             }
             payload = {
               kind: 'duplicate',
-              duplicate_of: parseInt(duplicateOf),
+              duplicate_of: dupNum,
               reason: duplicateReason,
             }
             break
+          }
           case 'needs_info':
             payload = {
               kind: 'needs_info',

@@ -22,26 +22,10 @@ export async function claimIssue(roomId: string, issueNumber: number) {
 
   if (!member) throw new Error('Not a member of this room')
 
-  // Verifica se l'issue è già claimata da qualcun altro (e non scaduta)
-  const { data: issue } = await supabase
-    .from('issues_cache')
-    .select('claimed_by, claimed_at')
-    .eq('room_id', roomId)
-    .eq('github_issue_number', issueNumber)
-    .single()
+  // Update atomico — claim solo se unclaimed, già nostro, o scaduto (evita race condition TOCTOU)
+  const expiryTs = new Date(Date.now() - CLAIM_EXPIRY_MS).toISOString()
 
-  if (!issue) throw new Error('Issue not found')
-
-  if (issue.claimed_by && issue.claimed_by !== user.id) {
-    const claimedAt = new Date(issue.claimed_at!).getTime()
-    const now = Date.now()
-    if (now - claimedAt < CLAIM_EXPIRY_MS) {
-      throw new Error('Issue already claimed by another triager')
-    }
-    // Claim scaduto — lo sovrascriviamo
-  }
-
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('issues_cache')
     .update({
       claimed_by: user.id,
@@ -49,8 +33,15 @@ export async function claimIssue(roomId: string, issueNumber: number) {
     })
     .eq('room_id', roomId)
     .eq('github_issue_number', issueNumber)
+    .or(`claimed_by.is.null,claimed_by.eq.${user.id},claimed_at.lt.${expiryTs}`)
+    .select('id')
 
   if (error) throw new Error(error.message)
+
+  // Se nessuna riga aggiornata → qualcun altro tiene il claim valido
+  if (!updated || updated.length === 0) {
+    throw new Error('Issue already claimed by another triager')
+  }
 
   revalidatePath(`/room/${roomId}`)
 }
