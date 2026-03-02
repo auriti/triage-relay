@@ -11,8 +11,17 @@ export async function createRoom(repoFullName: string, labels: string[]) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not authenticated')
 
-  const [repo_owner, repo_name] = repoFullName.trim().split('/').map(s => s.trim())
-  if (!repo_owner || !repo_name) throw new Error('Invalid repo format. Use owner/repo')
+  // Pulisci input — accetta sia "owner/repo" che URL GitHub
+  let cleanInput = repoFullName.trim()
+  if (cleanInput.startsWith('http')) {
+    const match = cleanInput.match(/github\.com\/([^/]+)\/([^/\s?#]+)/)
+    if (match) cleanInput = `${match[1]}/${match[2]}`
+  }
+
+  const [repo_owner, repo_name] = cleanInput.split('/').map(s => s.trim())
+  if (!repo_owner || !repo_name || repo_name.includes(' ')) {
+    throw new Error('Invalid format. Use owner/repo (e.g. facebook/react)')
+  }
 
   // Crea la room
   const { data: room, error: roomError } = await supabase
@@ -27,7 +36,10 @@ export async function createRoom(repoFullName: string, labels: string[]) {
     .select()
     .single()
 
-  if (roomError) throw new Error(roomError.message)
+  if (roomError) {
+    if (roomError.code === '23505') throw new Error('A room for this repository already exists')
+    throw new Error('Failed to create room. Please try again.')
+  }
 
   // Auto-join come maintainer
   const { error: memberError } = await supabase

@@ -57,8 +57,8 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative mx-auto max-w-3xl px-6 pt-32 pb-28 text-center">
-        {/* Glow dietro il testo */}
+      <section className="relative mx-auto max-w-3xl px-6 pt-32 pb-24 text-center">
+        {/* Glow */}
         <div className="pointer-events-none absolute inset-0 -top-20 flex items-center justify-center">
           <div className="h-64 w-64 rounded-full bg-primary/8 blur-[100px]" />
         </div>
@@ -96,6 +96,107 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Mock UI — Mostra l'interfaccia ai giudici */}
+      <section className="mx-auto max-w-4xl px-6 pb-16">
+        <div className="overflow-hidden rounded-xl border border-border/50 bg-card/50 shadow-2xl shadow-black/20">
+          {/* Barra titolo mock */}
+          <div className="flex items-center gap-2 border-b border-border/50 px-4 py-2.5">
+            <div className="flex gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-destructive/40" />
+              <div className="h-2.5 w-2.5 rounded-full bg-warning/40" />
+              <div className="h-2.5 w-2.5 rounded-full bg-primary/40" />
+            </div>
+            <span className="ml-2 text-[10px] text-muted-foreground/50">triage-relay.vercel.app</span>
+          </div>
+
+          {/* Contenuto mock — 2 colonne */}
+          <div className="grid lg:grid-cols-[200px_1fr_280px] gap-0">
+            {/* Sidebar mock */}
+            <div className="hidden lg:block border-r border-border/30 p-4 space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground/80">
+                <span className="text-primary">&#9670;</span>
+                facebook/react
+              </div>
+              <div className="rounded bg-primary/10 px-2.5 py-1.5 text-[10px] text-primary font-medium">Issues</div>
+              <div className="rounded px-2.5 py-1.5 text-[10px] text-muted-foreground/60">Proposals <span className="ml-1 inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary/80 px-1 text-[8px] text-primary-foreground font-bold">3</span></div>
+              <div className="mt-4 border-t border-border/20 pt-3">
+                <div className="grid grid-cols-2 gap-1.5">
+                  <div className="rounded bg-background/50 p-1.5 text-center">
+                    <div className="text-sm font-bold text-foreground/80">47</div>
+                    <div className="text-[8px] text-muted-foreground/50">Issues</div>
+                  </div>
+                  <div className="rounded bg-background/50 p-1.5 text-center">
+                    <div className="text-sm font-bold text-primary">12</div>
+                    <div className="text-[8px] text-muted-foreground/50">Applied</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Issues mock */}
+            <div className="p-4 space-y-2 border-r border-border/30">
+              <div className="text-xs font-semibold text-foreground/70 mb-3">Issue Backlog</div>
+              {[
+                { n: 28431, title: 'useEffect fires twice in StrictMode with async setup', labels: ['bug', 'needs-info'], comments: 23 },
+                { n: 28429, title: 'Add support for CSS container queries in styled-jsx', labels: ['enhancement'], comments: 8 },
+                { n: 28427, title: 'Memory leak in concurrent rendering mode', labels: ['bug', 'performance'], comments: 15 },
+              ].map((issue) => (
+                <div key={issue.n} className={`rounded-lg border p-3 text-left transition-all ${
+                  issue.n === 28431 ? 'border-primary/40 bg-primary/5' : 'border-border/30 bg-background/30'
+                }`}>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono text-[10px] text-primary/70">#{issue.n}</span>
+                  </div>
+                  <p className="mt-1 text-xs font-medium text-foreground/80 line-clamp-1">{issue.title}</p>
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    {issue.labels.map((l) => (
+                      <span key={l} className="rounded-full bg-muted/50 px-1.5 py-0.5 text-[8px] text-muted-foreground/60">{l}</span>
+                    ))}
+                    <span className="ml-auto text-[8px] text-muted-foreground/40">{issue.comments} comments</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* AI Brief mock */}
+            <div className="hidden lg:block p-4 space-y-3">
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <svg className="h-3 w-3 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                  </svg>
+                  <span className="text-[10px] font-semibold text-primary">AI Brief</span>
+                  <span className="ml-auto rounded-full bg-primary/20 px-1.5 py-0.5 text-[8px] font-bold text-primary">HIGH</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                  User reports useEffect cleanup not running correctly with async operations in StrictMode.
+                  Likely related to #28401 (double invocation).
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="text-[9px] font-semibold uppercase text-muted-foreground/50">Suggested Labels</div>
+                <div className="flex flex-wrap gap-1">
+                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[9px] text-primary font-medium">bug</span>
+                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[9px] text-primary font-medium">needs-info</span>
+                </div>
+              </div>
+
+              <div className="rounded-lg bg-background/50 border border-border/30 p-2.5">
+                <div className="text-[9px] font-semibold text-muted-foreground/50 mb-1">Draft Comment</div>
+                <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                  Thanks for reporting! Could you share a minimal reproduction...
+                </p>
+              </div>
+
+              <div className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-2 text-center">
+                <span className="text-[10px] font-semibold text-primary">Submit Proposal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pannello principale — Features + How it works con angoli invertiti */}
       <div className="inv-section">
         <div className="inv-inner py-16">
@@ -117,7 +218,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Separatore sottile */}
+          {/* Separatore */}
           <div className="mx-auto my-14 max-w-5xl px-6">
             <div className="border-t border-border/30" />
           </div>
@@ -126,8 +227,12 @@ export default function LandingPage() {
           <div className="mx-auto max-w-3xl px-6">
             <h2 className="mb-12 text-center text-2xl font-bold">How it works</h2>
             <div className="grid gap-8 sm:grid-cols-3">
-              {STEPS.map((step) => (
-                <div key={step.num} className="text-center">
+              {STEPS.map((step, i) => (
+                <div key={step.num} className="relative text-center">
+                  {/* Linea connettrice */}
+                  {i < STEPS.length - 1 && (
+                    <div className="absolute top-6 left-[calc(50%+28px)] hidden h-px w-[calc(100%-56px)] bg-gradient-to-r from-primary/30 to-primary/10 sm:block" />
+                  )}
                   <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-sm font-bold text-primary">
                     {step.num}
                   </div>
@@ -140,8 +245,28 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Tech stack */}
+      <section className="py-12">
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">Built with</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground/60">
+            <span>Next.js 16</span>
+            <span className="text-border">·</span>
+            <span>Supabase</span>
+            <span className="text-border">·</span>
+            <span>Groq AI</span>
+            <span className="text-border">·</span>
+            <span>Tailwind CSS 4</span>
+            <span className="text-border">·</span>
+            <span>shadcn/ui</span>
+            <span className="text-border">·</span>
+            <span>TypeScript</span>
+          </div>
+        </div>
+      </section>
+
       {/* CTA finale */}
-      <section className="pt-8 pb-20 text-center">
+      <section className="pt-4 pb-20 text-center">
         <div className="mx-auto max-w-xl px-6">
           <h2 className="text-2xl font-bold">Ready to lighten the load?</h2>
           <p className="mt-3 text-muted-foreground">
