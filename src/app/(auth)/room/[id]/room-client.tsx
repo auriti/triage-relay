@@ -13,6 +13,7 @@ interface RoomClientProps {
   roomLabels: string[]
   pendingProposalIssues: number[]
   currentUserId: string
+  role: string
 }
 
 export function RoomClient({
@@ -21,6 +22,7 @@ export function RoomClient({
   roomLabels,
   pendingProposalIssues,
   currentUserId,
+  role,
 }: RoomClientProps) {
   const [selectedIssue, setSelectedIssue] = useState<IssueCache | null>(null)
 
@@ -55,6 +57,19 @@ export function RoomClient({
 
   return (
     <div className="p-6">
+      {/* Banner ruolo per triager */}
+      {role === 'triager' && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
+          <svg className="h-4 w-4 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+          </svg>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">You are a triager.</span>{' '}
+            Select an issue, generate an AI brief, and submit proposals for maintainer review.
+          </p>
+        </div>
+      )}
+
       <div className="mb-6">
         <h1 className="text-xl font-bold">Issue Backlog</h1>
         <p className="text-sm text-muted-foreground">

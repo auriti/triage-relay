@@ -13,8 +13,8 @@ export default async function RoomPage({
   // Auth già verificata dal parent layout
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch issue cachate + room labels + proposte pending in parallelo
-  const [{ data: issues }, { data: room }, { data: pendingProposals }] = await Promise.all([
+  // Fetch issue, room, proposte pending e ruolo in parallelo
+  const [{ data: issues }, { data: room }, { data: pendingProposals }, { data: member }] = await Promise.all([
     supabase
       .from('issues_cache')
       .select('*')
@@ -31,6 +31,12 @@ export default async function RoomPage({
       .select('github_issue_number')
       .eq('room_id', id)
       .eq('status', 'pending'),
+    supabase
+      .from('room_members')
+      .select('role')
+      .eq('room_id', id)
+      .eq('user_id', user!.id)
+      .single(),
   ])
 
   const pendingIssueNumbers = [...new Set(pendingProposals?.map((p) => p.github_issue_number) || [])]
@@ -42,6 +48,7 @@ export default async function RoomPage({
       roomLabels={(room?.labels as string[]) || []}
       pendingProposalIssues={pendingIssueNumbers}
       currentUserId={user!.id}
+      role={member?.role || 'triager'}
     />
   )
 }

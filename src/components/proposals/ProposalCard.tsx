@@ -15,9 +15,8 @@ import type { Proposal, ProposalWithTriager } from '@/types/database'
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-warning/20 text-warning',
-  approved: 'bg-primary/20 text-primary',
+  applied: 'bg-primary/20 text-primary',
   rejected: 'bg-destructive/20 text-destructive',
-  applied: 'bg-orange-500/20 text-orange-500',
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -28,7 +27,7 @@ const KIND_LABELS: Record<string, string> = {
 }
 
 interface ProposalCardProps {
-  proposal: Proposal | ProposalWithTriager
+  proposal: (Proposal | ProposalWithTriager) & { issue_title?: string }
   roomId: string
   isMaintainer: boolean
 }
@@ -37,6 +36,7 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
   const [isOpen, setIsOpen] = useState(false)
   const payload = proposal.payload as Record<string, unknown>
   const triagerUsername = 'triager_username' in proposal ? proposal.triager_username : null
+  const issueTitle = 'issue_title' in proposal ? (proposal.issue_title as string) : null
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -45,9 +45,14 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-primary">
+                <span className="text-sm font-medium text-primary shrink-0">
                   #{proposal.github_issue_number}
                 </span>
+                {issueTitle && (
+                  <span className="truncate text-sm text-foreground/80">
+                    {issueTitle}
+                  </span>
+                )}
                 <Badge variant="outline" className="text-xs">
                   {KIND_LABELS[proposal.kind] || proposal.kind}
                 </Badge>

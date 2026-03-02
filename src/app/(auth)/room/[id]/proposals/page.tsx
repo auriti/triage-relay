@@ -2,7 +2,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProposalList } from '@/components/proposals/ProposalList'
-import type { Proposal, ProposalWithTriager } from '@/types/database'
+import type { ProposalWithTriager } from '@/types/database'
 
 export default async function ProposalsPage({
   params,
@@ -26,29 +26,43 @@ export default async function ProposalsPage({
     redirect(`/room/${id}`)
   }
 
-  // Fetch proposte con username triager
+  // Fetch proposte, username triager e titoli issue in parallelo
   const { data: proposals } = await supabase
     .from('proposals')
     .select('*')
     .eq('room_id', id)
     .order('created_at', { ascending: false })
 
-  // Recupera username dei triager dalla tabella room_members
+  // Issue numbers per recuperare i titoli
+  const issueNumbers = [...new Set((proposals || []).map((p) => p.github_issue_number))]
+
+  // Recupera username triager e titoli issue in parallelo
   const triagerIds = [...new Set((proposals || []).map((p) => p.created_by))]
-  const { data: members } = await supabase
-    .from('room_members')
-    .select('user_id, github_username')
-    .eq('room_id', id)
-    .in('user_id', triagerIds.length > 0 ? triagerIds : ['_none_'])
+  const [{ data: members }, { data: issues }] = await Promise.all([
+    supabase
+      .from('room_members')
+      .select('user_id, github_username')
+      .eq('room_id', id)
+      .in('user_id', triagerIds.length > 0 ? triagerIds : ['_none_']),
+    supabase
+      .from('issues_cache')
+      .select('github_issue_number, title')
+      .eq('room_id', id)
+      .in('github_issue_number', issueNumbers.length > 0 ? issueNumbers : [-1]),
+  ])
 
   const usernameMap = new Map(
     (members || []).map((m) => [m.user_id, m.github_username])
   )
+  const issueTitleMap = new Map(
+    (issues || []).map((i) => [i.github_issue_number, i.title])
+  )
 
-  const proposalsWithTriager: ProposalWithTriager[] = (proposals || []).map((p) => ({
+  const proposalsWithTriager = (proposals || []).map((p) => ({
     ...p,
     triager_username: usernameMap.get(p.created_by) || null,
-  })) as ProposalWithTriager[]
+    issue_title: issueTitleMap.get(p.github_issue_number) || null,
+  }))
 
   return (
     <div className="p-6">

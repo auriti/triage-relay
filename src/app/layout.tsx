@@ -9,14 +9,28 @@ const inter = Inter({
   subsets: ['latin'],
 })
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://triage-relay.vercel.app'
+
 export const metadata: Metadata = {
   title: 'Triage Relay — Collaborative Issue Triage',
   description:
     'Help open-source maintainers manage their backlog. Propose, review, apply — without needing push access.',
+  metadataBase: new URL(siteUrl),
   openGraph: {
-    title: 'Triage Relay',
-    description: 'Triage is a team sport. Help open-source maintainers manage their issue backlog.',
+    title: 'Triage Relay — Triage is a Team Sport',
+    description: 'Help open-source maintainers manage their issue backlog. AI-powered triage briefs, safe proposals, one-click apply.',
     type: 'website',
+    url: siteUrl,
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Triage Relay — Collaborative Issue Triage' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Triage Relay — Triage is a Team Sport',
+    description: 'AI-powered collaborative issue triage for open-source maintainers.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/favicon.svg',
   },
 }
 
