@@ -15,7 +15,7 @@ export default async function DashboardPage({
   return (
     <div className="mx-auto max-w-4xl px-6 py-8">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Your Rooms</h1>
           <p className="mt-1 text-sm text-muted-foreground">

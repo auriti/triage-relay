@@ -46,13 +46,28 @@ export default async function RoomPage({
       .eq('status', 'pending'),
   ])
 
+  // Popola claimed_by_username — join manuale con room_members
+  const { data: members } = await supabase
+    .from('room_members')
+    .select('user_id, github_username')
+    .eq('room_id', id)
+
+  const memberMap = new Map(
+    (members || []).map((m) => [m.user_id, m.github_username])
+  )
+
+  const issuesWithClaims = (issues || []).map((issue) => ({
+    ...issue,
+    claimed_by_username: issue.claimed_by ? memberMap.get(issue.claimed_by) || null : null,
+  }))
+
   const pendingIssueNumbers = [...new Set(pendingProposals?.map((p) => p.github_issue_number) || [])]
   const userPendingIssueNumbers = [...new Set(userPendingProposals?.map((p) => p.github_issue_number) || [])]
 
   return (
     <RoomClient
       roomId={id}
-      initialIssues={issues || []}
+      initialIssues={issuesWithClaims}
       roomLabels={(room?.labels as string[]) || []}
       pendingProposalIssues={pendingIssueNumbers}
       userPendingIssues={userPendingIssueNumbers}

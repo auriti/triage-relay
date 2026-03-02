@@ -192,3 +192,10 @@
 .inv-section > .inv-inner.inv-bottom-only::before {
   display: none;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-in {
+    animation: none;
+    opacity: 1;
+  }
+}

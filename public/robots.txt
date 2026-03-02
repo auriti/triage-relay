@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard
+Disallow: /room/
+
+Sitemap: https://triage-relay.vercel.app/sitemap.xml

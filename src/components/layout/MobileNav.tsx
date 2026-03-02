@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -27,6 +28,7 @@ interface MobileNavProps {
 
 export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
   const labels = (room.labels as string[]) || []
 
   return (
@@ -36,9 +38,12 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
         <div className="flex items-center justify-around py-2">
           <Link
             href={`/room/${room.id}`}
-            className="flex flex-col items-center gap-0.5 px-4 py-1 text-muted-foreground transition-colors hover:text-foreground"
+            className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+              pathname === `/room/${room.id}` ? 'text-primary' : 'text-muted-foreground'
+            }`}
+            aria-current={pathname === `/room/${room.id}` ? 'page' : undefined}
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
             </svg>
             <span className="text-[10px] font-medium">Issues</span>
@@ -47,9 +52,12 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
           {role === 'maintainer' ? (
             <Link
               href={`/room/${room.id}/proposals`}
-              className="relative flex flex-col items-center gap-0.5 px-4 py-1 text-muted-foreground transition-colors hover:text-foreground"
+              className={`relative flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+                pathname === `/room/${room.id}/proposals` ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              aria-current={pathname === `/room/${room.id}/proposals` ? 'page' : undefined}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
               </svg>
               <span className="text-[10px] font-medium">Proposals</span>
@@ -62,9 +70,12 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
           ) : (
             <Link
               href={`/room/${room.id}/my-proposals`}
-              className="flex flex-col items-center gap-0.5 px-4 py-1 text-muted-foreground transition-colors hover:text-foreground"
+              className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+                pathname === `/room/${room.id}/my-proposals` ? 'text-primary' : 'text-muted-foreground'
+              }`}
+              aria-current={pathname === `/room/${room.id}/my-proposals` ? 'page' : undefined}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />
               </svg>
               <span className="text-[10px] font-medium">My Proposals</span>
@@ -73,8 +84,8 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="flex flex-col items-center gap-0.5 px-4 py-1 text-muted-foreground transition-colors hover:text-foreground">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-muted-foreground transition-colors hover:text-foreground">
+                <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                 </svg>
                 <span className="text-[10px] font-medium">Info</span>

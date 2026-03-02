@@ -17,8 +17,14 @@ export default async function AuthLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:p-4 focus:bg-background focus:text-foreground focus:rounded-md"
+      >
+        Skip to main content
+      </a>
       <Header user={user} />
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
     </div>
   )
 }

@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { CopyJoinLink } from '@/components/rooms/CopyJoinLink'
 import type { Room } from '@/types/database'
@@ -15,6 +18,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
+  const pathname = usePathname()
   const labels = (room.labels as string[]) || []
 
   return (
@@ -23,7 +27,7 @@ export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
         {/* Info room */}
         <div className="mb-5">
           <div className="flex items-center gap-2">
-            <svg className="h-4 w-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <svg aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
             </svg>
             <h2 className="truncate text-sm font-semibold">
@@ -43,9 +47,12 @@ export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
         <nav className="mb-5 space-y-0.5">
           <Link
             href={`/room/${room.id}`}
-            className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
+            className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
+              pathname === `/room/${room.id}` ? 'bg-accent text-foreground' : 'hover:bg-accent'
+            }`}
+            aria-current={pathname === `/room/${room.id}` ? 'page' : undefined}
           >
-            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <svg aria-hidden="true" className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
             </svg>
             Issues
@@ -53,10 +60,13 @@ export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
           {role === 'maintainer' ? (
             <Link
               href={`/room/${room.id}/proposals`}
-              className="flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
+              className={`flex items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
+                pathname === `/room/${room.id}/proposals` ? 'bg-accent text-foreground' : 'hover:bg-accent'
+              }`}
+              aria-current={pathname === `/room/${room.id}/proposals` ? 'page' : undefined}
             >
               <span className="flex items-center gap-2.5">
-                <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <svg aria-hidden="true" className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
                 </svg>
                 Proposals
@@ -70,9 +80,12 @@ export function Sidebar({ room, role, pendingCount, stats }: SidebarProps) {
           ) : (
             <Link
               href={`/room/${room.id}/my-proposals`}
-              className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent"
+              className={`flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
+                pathname === `/room/${room.id}/my-proposals` ? 'bg-accent text-foreground' : 'hover:bg-accent'
+              }`}
+              aria-current={pathname === `/room/${room.id}/my-proposals` ? 'page' : undefined}
             >
-              <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <svg aria-hidden="true" className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" />
               </svg>
               My Proposals

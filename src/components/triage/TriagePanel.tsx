@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
@@ -80,6 +81,9 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose, hasExistingPro
             <span className="text-muted-foreground">#{issue.github_issue_number}</span>
             <span className="line-clamp-1">{issue.title}</span>
           </SheetTitle>
+          <SheetDescription className="sr-only">
+            Triage panel for issue #{issue.github_issue_number}. Generate an AI brief and submit a proposal.
+          </SheetDescription>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-5rem)]">

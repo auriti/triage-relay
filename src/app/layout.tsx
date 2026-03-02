@@ -21,13 +21,11 @@ export const metadata: Metadata = {
     description: 'Help open-source maintainers manage their issue backlog. AI-powered triage briefs, safe proposals, one-click apply.',
     type: 'website',
     url: siteUrl,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Triage Relay — Collaborative Issue Triage' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Triage Relay — Triage is a Team Sport',
     description: 'AI-powered collaborative issue triage for open-source maintainers.',
-    images: ['/og-image.png'],
   },
   icons: {
     icon: '/favicon.svg',

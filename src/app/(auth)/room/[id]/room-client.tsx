@@ -27,6 +27,8 @@ export function RoomClient({
   role,
 }: RoomClientProps) {
   const [selectedIssue, setSelectedIssue] = useState<IssueCache | null>(null)
+  const [localPendingIssues, setLocalPendingIssues] = useState(pendingProposalIssues)
+  const [localUserPending, setLocalUserPending] = useState(userPendingIssues)
 
   async function handleSelectIssue(issue: IssueCache | null) {
     // Rilascia claim sull'issue precedente
@@ -57,6 +59,15 @@ export function RoomClient({
     setSelectedIssue(null)
   }
 
+  function handleProposalSubmitted() {
+    if (selectedIssue) {
+      const num = selectedIssue.github_issue_number
+      setLocalPendingIssues(prev => [...new Set([...prev, num])])
+      setLocalUserPending(prev => [...new Set([...prev, num])])
+    }
+    handleClose()
+  }
+
   return (
     <div className="p-6">
       {/* Banner ruolo per triager */}
@@ -82,7 +93,7 @@ export function RoomClient({
       <IssueList
         roomId={roomId}
         initialIssues={initialIssues}
-        pendingProposalIssues={pendingProposalIssues}
+        pendingProposalIssues={localPendingIssues}
         onSelectIssue={handleSelectIssue}
         selectedIssueNumber={selectedIssue?.github_issue_number ?? null}
         currentUserId={currentUserId}
@@ -93,8 +104,8 @@ export function RoomClient({
         issue={selectedIssue}
         roomId={roomId}
         roomLabels={roomLabels}
-        onClose={handleClose}
-        hasExistingProposal={selectedIssue ? userPendingIssues.includes(selectedIssue.github_issue_number) : false}
+        onClose={handleProposalSubmitted}
+        hasExistingProposal={selectedIssue ? localUserPending.includes(selectedIssue.github_issue_number) : false}
       />
     </div>
   )
