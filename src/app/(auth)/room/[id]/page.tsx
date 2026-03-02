@@ -13,8 +13,8 @@ export default async function RoomPage({
   // Auth già verificata dal parent layout
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch issue, room, proposte pending e ruolo in parallelo
-  const [{ data: issues }, { data: room }, { data: pendingProposals }, { data: member }] = await Promise.all([
+  // Fetch issue, room, proposte pending, ruolo e proposte utente in parallelo
+  const [{ data: issues }, { data: room }, { data: pendingProposals }, { data: member }, { data: userPendingProposals }] = await Promise.all([
     supabase
       .from('issues_cache')
       .select('*')
@@ -37,9 +37,17 @@ export default async function RoomPage({
       .eq('room_id', id)
       .eq('user_id', user!.id)
       .single(),
+    // Proposte pending dell'utente corrente — per bloccare doppia proposta
+    supabase
+      .from('proposals')
+      .select('github_issue_number')
+      .eq('room_id', id)
+      .eq('created_by', user!.id)
+      .eq('status', 'pending'),
   ])
 
   const pendingIssueNumbers = [...new Set(pendingProposals?.map((p) => p.github_issue_number) || [])]
+  const userPendingIssueNumbers = [...new Set(userPendingProposals?.map((p) => p.github_issue_number) || [])]
 
   return (
     <RoomClient
@@ -47,6 +55,7 @@ export default async function RoomPage({
       initialIssues={issues || []}
       roomLabels={(room?.labels as string[]) || []}
       pendingProposalIssues={pendingIssueNumbers}
+      userPendingIssues={userPendingIssueNumbers}
       currentUserId={user!.id}
       role={member?.role || 'triager'}
     />

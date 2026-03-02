@@ -12,6 +12,7 @@ interface RoomClientProps {
   initialIssues: IssueCache[]
   roomLabels: string[]
   pendingProposalIssues: number[]
+  userPendingIssues: number[]
   currentUserId: string
   role: string
 }
@@ -21,6 +22,7 @@ export function RoomClient({
   initialIssues,
   roomLabels,
   pendingProposalIssues,
+  userPendingIssues,
   currentUserId,
   role,
 }: RoomClientProps) {
@@ -92,6 +94,7 @@ export function RoomClient({
         roomId={roomId}
         roomLabels={roomLabels}
         onClose={handleClose}
+        hasExistingProposal={selectedIssue ? userPendingIssues.includes(selectedIssue.github_issue_number) : false}
       />
     </div>
   )

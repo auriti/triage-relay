@@ -27,6 +27,20 @@ export async function createProposal(
 
   if (!member) throw new Error('Not a member of this room')
 
+  // Verifica proposta duplicata — impedisci doppia proposta pending per la stessa issue
+  const { data: existing } = await supabase
+    .from('proposals')
+    .select('id')
+    .eq('room_id', roomId)
+    .eq('github_issue_number', issueNumber)
+    .eq('created_by', user.id)
+    .eq('status', 'pending')
+    .limit(1)
+
+  if (existing && existing.length > 0) {
+    throw new Error('You already have a pending proposal for this issue. Wait for maintainer review before submitting another.')
+  }
+
   const { error } = await supabase.from('proposals').insert({
     room_id: roomId,
     github_issue_number: issueNumber,
@@ -41,6 +55,7 @@ export async function createProposal(
 
   revalidatePath(`/room/${roomId}`)
   revalidatePath(`/room/${roomId}/proposals`)
+  revalidatePath(`/room/${roomId}/my-proposals`)
 }
 
 // Recupera proposte per una room

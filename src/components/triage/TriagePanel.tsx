@@ -22,9 +22,10 @@ interface TriagePanelProps {
   roomId: string
   roomLabels: string[]
   onClose: () => void
+  hasExistingProposal?: boolean
 }
 
-export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelProps) {
+export function TriagePanel({ issue, roomId, roomLabels, onClose, hasExistingProposal = false }: TriagePanelProps) {
   const [brief, setBrief] = useState<TriageBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -111,6 +112,21 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
 
             {/* Colonna destra: brief AI + form proposta */}
             <div className="space-y-4">
+              {/* Avviso proposta duplicata */}
+              {hasExistingProposal && (
+                <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-medium text-amber-500">Proposal already pending</p>
+                    <p className="mt-0.5 text-xs text-amber-500/80">
+                      You already have a pending proposal for this issue. Wait for maintainer review before submitting another.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <Button
                 onClick={generateBrief}
                 disabled={loading}
@@ -128,7 +144,8 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose }: TriagePanelP
 
               {brief && <AIBriefCard brief={brief} />}
 
-              {brief && (
+              {/* Mostra il form solo se non c'è già una proposta pending */}
+              {brief && !hasExistingProposal && (
                 <ProposalForm
                   key={`${issue.github_issue_number}-${brief.confidence}`}
                   roomId={roomId}
