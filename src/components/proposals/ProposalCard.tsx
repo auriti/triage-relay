@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
@@ -41,7 +42,10 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card className="border-border bg-card">
-        <CollapsibleTrigger className="w-full text-left">
+        <CollapsibleTrigger
+          className="w-full text-left"
+          aria-label={`Expand proposal for issue #${proposal.github_issue_number}`}
+        >
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -62,9 +66,21 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 {triagerUsername && (
-                  <span className="text-foreground font-medium">@{triagerUsername}</span>
+                  <span className="flex items-center gap-1.5 text-foreground font-medium">
+                    {/* Avatar GitHub del triager */}
+                    <img
+                      src={`https://github.com/${triagerUsername}.png?size=40`}
+                      alt={`Avatar di ${triagerUsername}`}
+                      className="h-5 w-5 rounded-full"
+                    />
+                    @{triagerUsername}
+                  </span>
                 )}
                 <span suppressHydrationWarning>{formatDate(proposal.created_at)}</span>
+                {/* Indicatore espandibile */}
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                />
               </div>
             </div>
 

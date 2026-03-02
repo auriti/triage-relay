@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   Sheet,
   SheetContent,
@@ -10,33 +11,54 @@ import {
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import ReactMarkdown from 'react-markdown'
+import { Skeleton } from '@/components/ui/skeleton'
 import remarkGfm from 'remark-gfm'
+
+// Lazy-load react-markdown (~180KB) per ridurre il bundle iniziale
+const ReactMarkdown = dynamic(() => import('react-markdown'), {
+  loading: () => <Skeleton className="h-40 w-full rounded-lg" />,
+  ssr: false,
+})
 import { AIBriefCard } from './AIBriefCard'
 import { ProposalForm } from './ProposalForm'
 import { toast } from 'sonner'
-import type { IssueCache } from '@/types/database'
+import type { IssueCache, CannedResponse } from '@/types/database'
 import type { TriageBrief } from '@/types/triage'
 
 interface TriagePanelProps {
   issue: IssueCache | null
   roomId: string
   roomLabels: string[]
+  cannedResponses: CannedResponse[]
   onClose: () => void
   hasExistingProposal?: boolean
 }
 
-export function TriagePanel({ issue, roomId, roomLabels, onClose, hasExistingProposal = false }: TriagePanelProps) {
+export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClose, hasExistingProposal = false }: TriagePanelProps) {
   const [brief, setBrief] = useState<TriageBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Reset stato quando cambia l'issue (evita setState durante render)
+  // Reset stato quando cambia l'issue — ripristina dal cache se disponibile
   useEffect(() => {
-    setBrief(null)
     setError(null)
     setLoading(false)
-  }, [issue?.github_issue_number])
+    if (issue) {
+      const key = `triage-draft-${roomId}-${issue.github_issue_number}`
+      const saved = sessionStorage.getItem(key)
+      if (saved) {
+        try {
+          setBrief(JSON.parse(saved))
+        } catch {
+          setBrief(null)
+        }
+      } else {
+        setBrief(null)
+      }
+    } else {
+      setBrief(null)
+    }
+  }, [issue?.github_issue_number, roomId])
 
   async function generateBrief() {
     if (!issue) return
@@ -63,6 +85,11 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose, hasExistingPro
       }
 
       setBrief(data.brief)
+      // Salva brief in sessionStorage per ripristino rapido
+      sessionStorage.setItem(
+        `triage-draft-${roomId}-${issue.github_issue_number}`,
+        JSON.stringify(data.brief)
+      )
     } catch {
       setError('AI service unavailable. You can still triage manually.')
       toast.error('AI service unavailable')
@@ -155,8 +182,15 @@ export function TriagePanel({ issue, roomId, roomLabels, onClose, hasExistingPro
                   roomId={roomId}
                   issueNumber={issue.github_issue_number}
                   roomLabels={roomLabels}
+                  cannedResponses={cannedResponses}
                   brief={brief}
-                  onSubmitted={onClose}
+                  onSubmitted={() => {
+                    // Pulisci cache dopo submit riuscito
+                    if (issue) {
+                      sessionStorage.removeItem(`triage-draft-${roomId}-${issue.github_issue_number}`)
+                    }
+                    onClose()
+                  }}
                 />
               )}
             </div>

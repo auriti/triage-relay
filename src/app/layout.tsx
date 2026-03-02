@@ -2,7 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
+import { validateEnv } from '@/lib/env'
 import './globals.css'
+
+// Valida env vars all'avvio
+validateEnv()
 
 const inter = Inter({
   variable: '--font-inter',
@@ -40,6 +44,25 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'Triage Relay',
+              description: 'AI-powered collaborative issue triage for open-source maintainers. Volunteers propose labels and comments, maintainers approve and apply.',
+              applicationCategory: 'DeveloperApplication',
+              operatingSystem: 'Any',
+              url: 'https://triage-relay.vercel.app',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            }),
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

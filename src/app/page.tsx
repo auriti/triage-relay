@@ -44,10 +44,10 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <span className="flex items-center gap-2 font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
             <span className="text-primary text-lg">&#9670;</span>
             Triage Relay
-          </span>
+          </Link>
           <Link href="/login">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               Sign in
@@ -211,7 +211,7 @@ export default function LandingPage() {
                   <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     {f.icon}
                   </div>
-                  <h3 className="mb-2 font-semibold">{f.title}</h3>
+                  <h2 className="mb-2 font-semibold">{f.title}</h2>
                   <p className="text-sm leading-relaxed text-muted-foreground">{f.description}</p>
                 </div>
               ))}

@@ -1,6 +1,7 @@
 // Room page — backlog issue + pannello triage
 import { createClient } from '@/lib/supabase/server'
 import { RoomClient } from './room-client'
+import type { CannedResponse } from '@/types/database'
 
 export default async function RoomPage({
   params,
@@ -23,7 +24,7 @@ export default async function RoomPage({
       .order('github_issue_number', { ascending: false }),
     supabase
       .from('rooms')
-      .select('labels')
+      .select('labels, canned_responses')
       .eq('id', id)
       .single(),
     supabase
@@ -69,6 +70,7 @@ export default async function RoomPage({
       roomId={id}
       initialIssues={issuesWithClaims}
       roomLabels={(room?.labels as string[]) || []}
+      cannedResponses={(room?.canned_responses as CannedResponse[]) || []}
       pendingProposalIssues={pendingIssueNumbers}
       userPendingIssues={userPendingIssueNumbers}
       currentUserId={user!.id}

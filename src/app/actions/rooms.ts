@@ -90,6 +90,91 @@ export async function joinRoom(roomId: string) {
   revalidatePath('/dashboard')
 }
 
+// Aggiorna le label di una room (solo maintainer/creatore)
+export async function updateRoomLabels(roomId: string, labels: string[]) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Verifica che l'utente sia il creatore della room
+  const { data: room } = await supabase
+    .from('rooms')
+    .select('created_by')
+    .eq('id', roomId)
+    .single()
+
+  if (!room || room.created_by !== user.id) {
+    throw new Error('Only the room creator can update settings')
+  }
+
+  const { error } = await supabase
+    .from('rooms')
+    .update({ labels })
+    .eq('id', roomId)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath(`/room/${roomId}`)
+}
+
+// Lista membri di una room (solo maintainer)
+export async function getRoomMembers(roomId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: member } = await supabase
+    .from('room_members')
+    .select('role')
+    .eq('room_id', roomId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (!member || member.role !== 'maintainer') {
+    throw new Error('Only maintainers can view members')
+  }
+
+  const { data: members } = await supabase
+    .from('room_members')
+    .select('user_id, role, github_username, joined_at')
+    .eq('room_id', roomId)
+    .order('joined_at', { ascending: true })
+
+  return members || []
+}
+
+// Rimuovi un membro dalla room (solo creatore)
+export async function removeMember(roomId: string, userId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { data: room } = await supabase
+    .from('rooms')
+    .select('created_by')
+    .eq('id', roomId)
+    .single()
+
+  if (!room || room.created_by !== user.id) {
+    throw new Error('Only the room creator can remove members')
+  }
+
+  if (userId === user.id) {
+    throw new Error('Cannot remove yourself')
+  }
+
+  const { error } = await supabase
+    .from('room_members')
+    .delete()
+    .eq('room_id', roomId)
+    .eq('user_id', userId)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath(`/room/${roomId}`)
+  revalidatePath(`/room/${roomId}/settings`)
+}
+
 // Recupera le room dell'utente con ruolo e stats
 export async function getUserRooms(): Promise<RoomWithMembership[]> {
   const supabase = await createClient()

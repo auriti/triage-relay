@@ -14,13 +14,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { createProposal } from '@/app/actions/proposals'
 import { toast } from 'sonner'
-import type { ProposalKind } from '@/types/database'
+import type { ProposalKind, CannedResponse } from '@/types/database'
 import type { TriageBrief } from '@/types/triage'
 
 interface ProposalFormProps {
   roomId: string
   issueNumber: number
   roomLabels: string[]
+  cannedResponses: CannedResponse[]
   brief: TriageBrief
   onSubmitted: () => void
 }
@@ -29,6 +30,7 @@ export function ProposalForm({
   roomId,
   issueNumber,
   roomLabels,
+  cannedResponses,
   brief,
   onSubmitted,
 }: ProposalFormProps) {
@@ -153,6 +155,24 @@ export function ProposalForm({
       {(kind === 'comment' || kind === 'needs_info') && (
         <div>
           <label htmlFor="proposal-comment" className="text-xs font-medium text-muted-foreground">Comment</label>
+          {/* Bottoni template — risposte predefinite configurate dal maintainer */}
+          {cannedResponses.length > 0 && (
+            <div className="mb-2 mt-1">
+              <p className="text-[10px] font-medium text-muted-foreground mb-1">Templates</p>
+              <div className="flex flex-wrap gap-1">
+                {cannedResponses.map((cr) => (
+                  <button
+                    key={cr.label}
+                    type="button"
+                    onClick={() => setComment(cr.template)}
+                    className="rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                  >
+                    {cr.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <Textarea
             id="proposal-comment"
             value={comment}

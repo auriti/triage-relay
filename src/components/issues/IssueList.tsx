@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
 import type { IssueCache } from '@/types/database'
 
-type FilterTab = 'all' | 'unlabeled' | 'most_commented'
+type FilterTab = 'all' | 'unlabeled' | 'most_commented' | 'new'
 
 interface IssueListProps {
   roomId: string
@@ -76,11 +76,15 @@ export function IssueList({
     return true
   })
 
-  // Ordina per commenti se filtro "most_commented"
+  // Ordina per commenti o per data creazione in base al filtro
   const sortedIssues =
     filter === 'most_commented'
       ? [...filteredIssues].sort((a, b) => b.comments_count - a.comments_count)
-      : filteredIssues
+      : filter === 'new'
+        ? [...filteredIssues].sort((a, b) =>
+            new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+          )
+        : filteredIssues
 
   // Conteggi per i tab
   const unlabeledCount = issues.filter((i) => ((i.labels as string[]) || []).length === 0).length
@@ -109,6 +113,9 @@ export function IssueList({
             </TabsTrigger>
             <TabsTrigger value="most_commented" className="text-xs">
               Hot
+            </TabsTrigger>
+            <TabsTrigger value="new" className="text-xs">
+              New
             </TabsTrigger>
           </TabsList>
         </Tabs>

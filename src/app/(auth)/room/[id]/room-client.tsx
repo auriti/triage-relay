@@ -5,12 +5,13 @@ import { IssueList } from '@/components/issues/IssueList'
 import { TriagePanel } from '@/components/triage/TriagePanel'
 import { claimIssue, releaseIssueClaim } from '@/app/actions/issues'
 import { toast } from 'sonner'
-import type { IssueCache } from '@/types/database'
+import type { IssueCache, CannedResponse } from '@/types/database'
 
 interface RoomClientProps {
   roomId: string
   initialIssues: IssueCache[]
   roomLabels: string[]
+  cannedResponses: CannedResponse[]
   pendingProposalIssues: number[]
   userPendingIssues: number[]
   currentUserId: string
@@ -21,6 +22,7 @@ export function RoomClient({
   roomId,
   initialIssues,
   roomLabels,
+  cannedResponses,
   pendingProposalIssues,
   userPendingIssues,
   currentUserId,
@@ -104,6 +106,7 @@ export function RoomClient({
         issue={selectedIssue}
         roomId={roomId}
         roomLabels={roomLabels}
+        cannedResponses={cannedResponses}
         onClose={handleProposalSubmitted}
         hasExistingProposal={selectedIssue ? localUserPending.includes(selectedIssue.github_issue_number) : false}
       />
