@@ -50,7 +50,10 @@ export function Header({ user }: { user: User }) {
                 {username[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="pr-1 text-sm text-muted-foreground">{username}</span>
+            {/* Fix responsive: nascosto su mobile per evitare overflow del menu */}
+            <span className="hidden sm:inline pr-1 text-sm text-muted-foreground max-w-[120px] truncate">
+              {username}
+            </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <div className="px-2 py-1.5">

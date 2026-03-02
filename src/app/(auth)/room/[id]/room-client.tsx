@@ -3,9 +3,17 @@
 import { useState } from 'react'
 import { IssueList } from '@/components/issues/IssueList'
 import { TriagePanel } from '@/components/triage/TriagePanel'
+import { Leaderboard } from '@/components/rooms/Leaderboard'
 import { claimIssue, releaseIssueClaim } from '@/app/actions/issues'
 import { toast } from 'sonner'
 import type { IssueCache, CannedResponse } from '@/types/database'
+
+// Struttura dati per ogni riga della leaderboard
+interface LeaderboardEntry {
+  github_username: string | null
+  total: number
+  applied: number
+}
 
 interface RoomClientProps {
   roomId: string
@@ -16,6 +24,7 @@ interface RoomClientProps {
   userPendingIssues: number[]
   currentUserId: string
   role: string
+  leaderboard: LeaderboardEntry[]
 }
 
 export function RoomClient({
@@ -27,30 +36,28 @@ export function RoomClient({
   userPendingIssues,
   currentUserId,
   role,
+  leaderboard,
 }: RoomClientProps) {
   const [selectedIssue, setSelectedIssue] = useState<IssueCache | null>(null)
   const [localPendingIssues, setLocalPendingIssues] = useState(pendingProposalIssues)
   const [localUserPending, setLocalUserPending] = useState(userPendingIssues)
 
-  async function handleSelectIssue(issue: IssueCache | null) {
-    // Rilascia claim sull'issue precedente
+  function handleSelectIssue(issue: IssueCache | null) {
+    // Rilascia claim sull'issue precedente (fire-and-forget, non blocca UI)
     if (selectedIssue && (!issue || issue.github_issue_number !== selectedIssue.github_issue_number)) {
-      releaseIssueClaim(roomId, selectedIssue.github_issue_number).catch(() => {
-        // Rilascio silenzioso — non bloccare il flusso
-      })
+      releaseIssueClaim(roomId, selectedIssue.github_issue_number).catch(() => {})
     }
 
+    // Mostra immediatamente il panel senza attendere il claim
     setSelectedIssue(issue)
 
-    // Claim la nuova issue
+    // Claim in background (fire-and-forget) — non blocca l'apertura del panel
     if (issue) {
-      try {
-        await claimIssue(roomId, issue.github_issue_number)
-      } catch (err) {
+      claimIssue(roomId, issue.github_issue_number).catch((err) => {
         if (err instanceof Error && err.message.includes('already claimed')) {
           toast.warning('This issue is being triaged by another volunteer')
         }
-      }
+      })
     }
   }
 
@@ -101,13 +108,22 @@ export function RoomClient({
         currentUserId={currentUserId}
       />
 
+      {/* Pannello leaderboard — visibile solo se ci sono proposte nella room */}
+      {leaderboard.length > 0 && (
+        <div className="mt-6">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">Top Contributors</h2>
+          <Leaderboard entries={leaderboard} />
+        </div>
+      )}
+
       {/* Pannello triage — Sheet laterale */}
       <TriagePanel
         issue={selectedIssue}
         roomId={roomId}
         roomLabels={roomLabels}
         cannedResponses={cannedResponses}
-        onClose={handleProposalSubmitted}
+        onClose={handleClose}
+        onProposalSubmitted={handleProposalSubmitted}
         hasExistingProposal={selectedIssue ? localUserPending.includes(selectedIssue.github_issue_number) : false}
       />
     </div>

@@ -46,21 +46,31 @@ export async function POST(request: Request) {
     // Client service_role per operazioni cache (bypassa RLS)
     const serviceClient = createServiceClient()
 
-    // Verifica cache: non ri-fetchare se last_synced_at < 5 min
-    const { data: cachedIssues } = await serviceClient
+    // Step 1 — Query leggera: recupera solo last_synced_at per verificare
+    // la freschezza della cache senza trasferire tutti i dati delle issue.
+    const { data: timestampRow } = await serviceClient
       .from('issues_cache')
-      .select('*')
+      .select('last_synced_at')
       .eq('room_id', roomId)
       .order('github_issue_number', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-    const latestSync = cachedIssues?.[0]?.last_synced_at
+    const latestSync = timestampRow?.last_synced_at
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
 
-    if (latestSync && latestSync > fiveMinAgo && cachedIssues && cachedIssues.length > 0) {
-      // Filtra solo le open per la risposta
-      const openIssues = cachedIssues.filter((i) => i.state === 'open')
+    if (latestSync && latestSync > fiveMinAgo) {
+      // Step 2 — Cache fresca: carica tutti i dati solo adesso che sappiamo
+      // che la risposta sarà servita dalla cache e non da GitHub.
+      const { data: cachedIssues } = await serviceClient
+        .from('issues_cache')
+        .select('*')
+        .eq('room_id', roomId)
+        .eq('state', 'open')
+        .order('github_issue_number', { ascending: false })
+
       return NextResponse.json({
-        issues: openIssues,
+        issues: cachedIssues || [],
         cached: true,
         synced_at: latestSync,
       })

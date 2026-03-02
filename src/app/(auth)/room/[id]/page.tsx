@@ -14,8 +14,8 @@ export default async function RoomPage({
   // Auth già verificata dal parent layout
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch issue, room, proposte pending, ruolo e proposte utente in parallelo
-  const [{ data: issues }, { data: room }, { data: pendingProposals }, { data: member }, { data: userPendingProposals }] = await Promise.all([
+  // Fetch issue, room, proposte pending, ruolo, proposte utente e dati leaderboard in parallelo
+  const [{ data: issues }, { data: room }, { data: pendingProposals }, { data: member }, { data: userPendingProposals }, { data: leaderboardRaw }] = await Promise.all([
     supabase
       .from('issues_cache')
       .select('*')
@@ -45,6 +45,11 @@ export default async function RoomPage({
       .eq('room_id', id)
       .eq('created_by', user!.id)
       .eq('status', 'pending'),
+    // Tutte le proposte della room con autore e stato — necessarie per la leaderboard
+    supabase
+      .from('proposals')
+      .select('created_by, status')
+      .eq('room_id', id),
   ])
 
   // Popola claimed_by_username — join manuale con room_members
@@ -65,6 +70,25 @@ export default async function RoomPage({
   const pendingIssueNumbers = [...new Set(pendingProposals?.map((p) => p.github_issue_number) || [])]
   const userPendingIssueNumbers = [...new Set(userPendingProposals?.map((p) => p.github_issue_number) || [])]
 
+  // Aggrega le proposte per autore e calcola totale + applicate
+  const leaderMap = new Map<string, { total: number; applied: number }>()
+  leaderboardRaw?.forEach((p) => {
+    const entry = leaderMap.get(p.created_by) || { total: 0, applied: 0 }
+    entry.total++
+    if (p.status === 'applied') entry.applied++
+    leaderMap.set(p.created_by, entry)
+  })
+
+  // Costruisce la lista ordinata per numero totale di proposte decrescente,
+  // arricchita con il github_username del triager tramite la memberMap già costruita
+  const leaderboard = [...leaderMap.entries()]
+    .map(([userId, stats]) => ({
+      github_username: memberMap.get(userId) || null,
+      total: stats.total,
+      applied: stats.applied,
+    }))
+    .sort((a, b) => b.total - a.total)
+
   return (
     <RoomClient
       roomId={id}
@@ -75,6 +99,7 @@ export default async function RoomPage({
       userPendingIssues={userPendingIssueNumbers}
       currentUserId={user!.id}
       role={member?.role || 'triager'}
+      leaderboard={leaderboard}
     />
   )
 }

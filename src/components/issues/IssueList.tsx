@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { IssueCard } from './IssueCard'
+import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -31,6 +32,16 @@ export function IssueList({
   const [filter, setFilter] = useState<FilterTab>('all')
   const [syncing, setSyncing] = useState(false)
   const [lastSynced, setLastSynced] = useState<string | null>(null)
+  // Testo inserito nel campo ricerca
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Sincronizza lo stato locale quando la prop initialIssues cambia in seguito
+  // a un re-render del parent (useState non reagisce ai successivi aggiornamenti della prop)
+  useEffect(() => {
+    if (initialIssues.length > 0) {
+      setIssues(initialIssues)
+    }
+  }, [initialIssues])
 
   const syncIssues = useCallback(async () => {
     setSyncing(true)
@@ -69,25 +80,43 @@ export function IssueList({
     }
   }, [initialIssues.length, syncIssues])
 
-  // Filtri
-  const filteredIssues = issues.filter((issue) => {
-    const labels = (issue.labels as string[]) || []
-    if (filter === 'unlabeled') return labels.length === 0
-    return true
-  })
+  // Prima fase: filtro per testo di ricerca (titolo o numero issue)
+  const searchFiltered = useMemo(() => {
+    if (!searchQuery.trim()) return issues
+    const q = searchQuery.toLowerCase()
+    return issues.filter(
+      (issue) =>
+        issue.title.toLowerCase().includes(q) ||
+        issue.github_issue_number.toString().includes(q)
+    )
+  }, [issues, searchQuery])
 
-  // Ordina per commenti o per data creazione in base al filtro
-  const sortedIssues =
-    filter === 'most_commented'
-      ? [...filteredIssues].sort((a, b) => b.comments_count - a.comments_count)
-      : filter === 'new'
-        ? [...filteredIssues].sort((a, b) =>
-            new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-          )
-        : filteredIssues
+  // Seconda fase: filtro per tab applicato sul risultato della ricerca
+  const filteredIssues = useMemo(() => {
+    return searchFiltered.filter((issue) => {
+      const labels = (issue.labels as string[]) || []
+      if (filter === 'unlabeled') return labels.length === 0
+      return true
+    })
+  }, [searchFiltered, filter])
 
-  // Conteggi per i tab
-  const unlabeledCount = issues.filter((i) => ((i.labels as string[]) || []).length === 0).length
+  // Ordinamento memorizzato: ricalcola solo quando filteredIssues o filter cambiano
+  const sortedIssues = useMemo(() => {
+    if (filter === 'most_commented') {
+      return [...filteredIssues].sort((a, b) => b.comments_count - a.comments_count)
+    }
+    if (filter === 'new') {
+      return [...filteredIssues].sort((a, b) =>
+        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      )
+    }
+    return filteredIssues
+  }, [filteredIssues, filter])
+
+  // Conteggio unlabeled calcolato sul pool già filtrato dalla ricerca
+  const unlabeledCount = useMemo(() => {
+    return searchFiltered.filter((i) => ((i.labels as string[]) || []).length === 0).length
+  }, [searchFiltered])
 
   if (syncing && issues.length === 0) {
     return (
@@ -101,50 +130,86 @@ export function IssueList({
 
   return (
     <div className="space-y-4">
-      {/* Header: filtri + sync */}
-      <div className="flex items-center justify-between gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterTab)}>
-          <TabsList className="bg-card">
-            <TabsTrigger value="all" className="text-xs">
-              All{issues.length > 0 ? ` (${issues.length})` : ''}
-            </TabsTrigger>
-            <TabsTrigger value="unlabeled" className="text-xs">
-              Unlabeled{unlabeledCount > 0 ? ` (${unlabeledCount})` : ''}
-            </TabsTrigger>
-            <TabsTrigger value="most_commented" className="text-xs">
-              Hot
-            </TabsTrigger>
-            <TabsTrigger value="new" className="text-xs">
-              New
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <div className="flex items-center gap-2">
-          {lastSynced && (
-            <span className="text-[10px] text-muted-foreground">
-              synced {new Date(lastSynced).toLocaleTimeString()}
-            </span>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={syncIssues}
-            disabled={syncing}
-            className="h-8 gap-1.5 text-xs"
+      {/*
+        Header: ricerca + filtri + sync.
+        Fix responsive: stack verticale su mobile per evitare overflow orizzontale.
+        I tab sono wrappati in overflow-x-auto con min-w-max per schermi <375px.
+      */}
+      <div className="space-y-3">
+        {/* Campo ricerca per filtrare per titolo o numero issue */}
+        <div className="relative">
+          <svg
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            aria-hidden="true"
           >
-            <svg
-              aria-hidden="true"
-              className={`h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+          <Input
+            placeholder="Cerca issue..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-9"
+          />
+        </div>
+
+        {/* Riga tab + pulsante sync */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          {/* Wrapper scrollabile orizzontalmente per i tab su schermi molto stretti */}
+          <div className="overflow-x-auto -mx-1 px-1">
+            <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterTab)}>
+              <TabsList className="bg-card min-w-max">
+                {/* Conteggio basato sul pool post-ricerca */}
+                <TabsTrigger value="all" className="text-xs">
+                  All{searchFiltered.length > 0 ? ` (${searchFiltered.length})` : ''}
+                </TabsTrigger>
+                <TabsTrigger value="unlabeled" className="text-xs">
+                  Unlabeled{unlabeledCount > 0 ? ` (${unlabeledCount})` : ''}
+                </TabsTrigger>
+                <TabsTrigger value="most_commented" className="text-xs">
+                  Hot
+                </TabsTrigger>
+                <TabsTrigger value="new" className="text-xs">
+                  New
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Pulsante sync — allineato a destra su mobile */}
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {lastSynced && (
+              <span className="text-[10px] text-muted-foreground">
+                synced {new Date(lastSynced).toLocaleTimeString()}
+              </span>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={syncIssues}
+              disabled={syncing}
+              className="h-8 gap-1.5 text-xs"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
-            </svg>
-            {syncing ? 'Syncing...' : 'Sync'}
-          </Button>
+              <svg
+                aria-hidden="true"
+                className={`h-3.5 w-3.5 ${syncing ? 'animate-spin' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+              </svg>
+              {syncing ? 'Syncing...' : 'Sync'}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -157,7 +222,9 @@ export function IssueList({
           <p className="text-sm text-muted-foreground">
             {issues.length === 0
               ? 'No issues cached yet'
-              : 'No issues match this filter'}
+              : searchQuery.trim()
+                ? 'Nessuna issue trovata per questa ricerca'
+                : 'No issues match this filter'}
           </p>
           {issues.length === 0 && (
             <Button variant="outline" size="sm" className="mt-3" onClick={syncIssues}>

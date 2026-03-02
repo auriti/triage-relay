@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/utils'
 import type { IssueCache } from '@/types/database'
@@ -12,7 +13,10 @@ interface IssueCardProps {
   currentUserId?: string
 }
 
-export function IssueCard({ issue, isSelected, onClick, hasPendingProposal, currentUserId }: IssueCardProps) {
+// Componente interno: la funzione separata consente a React.memo di fare
+// un confronto shallow delle props ed evitare re-render inutili quando
+// IssueList cambia filter o avvia una sincronizzazione.
+function IssueCardComponent({ issue, isSelected, onClick, hasPendingProposal, currentUserId }: IssueCardProps) {
   const labels = (issue.labels as string[]) || []
 
   // Verifica se il claim è ancora valido (30 min)
@@ -112,3 +116,7 @@ export function IssueCard({ issue, isSelected, onClick, hasPendingProposal, curr
     </button>
   )
 }
+
+// Esporta il componente wrappato con memo: evita re-render quando le props
+// non cambiano (confronto shallow per riferimento).
+export const IssueCard = memo(IssueCardComponent)

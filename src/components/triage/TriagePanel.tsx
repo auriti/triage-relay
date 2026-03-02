@@ -30,11 +30,14 @@ interface TriagePanelProps {
   roomId: string
   roomLabels: string[]
   cannedResponses: CannedResponse[]
+  /** Chiamata solo per chiusura manuale del panel (senza submit) */
   onClose: () => void
+  /** Chiamata solo dopo un submit riuscito — aggiorna le pending issues */
+  onProposalSubmitted: () => void
   hasExistingProposal?: boolean
 }
 
-export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClose, hasExistingProposal = false }: TriagePanelProps) {
+export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClose, onProposalSubmitted, hasExistingProposal = false }: TriagePanelProps) {
   const [brief, setBrief] = useState<TriageBrief | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -102,7 +105,8 @@ export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClos
 
   return (
     <Sheet open={!!issue} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="w-full sm:max-w-[60vw] overflow-hidden p-0">
+      {/* Fix responsive: larghezza Sheet limitata su tablet, full su mobile */}
+      <SheetContent className="w-full sm:max-w-[540px] lg:max-w-[60vw] overflow-hidden p-0">
         <SheetHeader className="border-b border-border px-6 py-4">
           <SheetTitle className="flex items-center gap-2">
             <span className="text-muted-foreground">#{issue.github_issue_number}</span>
@@ -114,8 +118,13 @@ export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClos
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-5rem)]">
-          <div className="grid gap-6 p-6 lg:grid-cols-2">
-            {/* Colonna sinistra: contenuto issue */}
+          {/*
+            Fix responsive: su mobile usa flex-col-reverse per mostrare il brief AI
+            sopra il body dell'issue — riduce lo scroll necessario. Su desktop
+            torna al layout a 2 colonne (brief a destra).
+          */}
+          <div className="flex flex-col-reverse gap-6 p-6 lg:grid lg:grid-cols-2">
+            {/* Colonna sinistra (sotto su mobile, sinistra su desktop): contenuto issue */}
             <div className="space-y-4">
               <div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -141,7 +150,7 @@ export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClos
               </div>
             </div>
 
-            {/* Colonna destra: brief AI + form proposta */}
+            {/* Colonna destra (sopra su mobile, destra su desktop): brief AI + form proposta */}
             <div className="space-y-4">
               {/* Avviso proposta duplicata */}
               {hasExistingProposal && (
@@ -185,11 +194,12 @@ export function TriagePanel({ issue, roomId, roomLabels, cannedResponses, onClos
                   cannedResponses={cannedResponses}
                   brief={brief}
                   onSubmitted={() => {
-                    // Pulisci cache dopo submit riuscito
+                    // Pulisci cache del brief dopo submit riuscito
                     if (issue) {
                       sessionStorage.removeItem(`triage-draft-${roomId}-${issue.github_issue_number}`)
                     }
-                    onClose()
+                    // Notifica il parent che la proposta è stata inviata (aggiorna pending)
+                    onProposalSubmitted()
                   }}
                 />
               )}

@@ -36,9 +36,10 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
       {/* Barra mobile fissa in basso */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur-xl">
         <div className="flex items-center justify-around py-2">
+          {/* Fix WCAG 2.5.5: py-3 garantisce touch target minimo di 48px */}
           <Link
             href={`/room/${room.id}`}
-            className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+            className={`flex flex-col items-center gap-0.5 px-4 py-3 transition-colors hover:text-foreground ${
               pathname === `/room/${room.id}` ? 'text-primary' : 'text-muted-foreground'
             }`}
             aria-current={pathname === `/room/${room.id}` ? 'page' : undefined}
@@ -49,10 +50,11 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
             <span className="text-[10px] font-medium">Issues</span>
           </Link>
 
+          {/* Fix WCAG 2.5.5: py-3 nei link garantisce touch target minimo di 48px */}
           {role === 'maintainer' ? (
             <Link
               href={`/room/${room.id}/proposals`}
-              className={`relative flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+              className={`relative flex flex-col items-center gap-0.5 px-4 py-3 transition-colors hover:text-foreground ${
                 pathname === `/room/${room.id}/proposals` ? 'text-primary' : 'text-muted-foreground'
               }`}
               aria-current={pathname === `/room/${room.id}/proposals` ? 'page' : undefined}
@@ -70,7 +72,7 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
           ) : (
             <Link
               href={`/room/${room.id}/my-proposals`}
-              className={`flex flex-col items-center gap-0.5 px-4 py-2 transition-colors hover:text-foreground ${
+              className={`flex flex-col items-center gap-0.5 px-4 py-3 transition-colors hover:text-foreground ${
                 pathname === `/room/${room.id}/my-proposals` ? 'text-primary' : 'text-muted-foreground'
               }`}
               aria-current={pathname === `/room/${room.id}/my-proposals` ? 'page' : undefined}
@@ -84,7 +86,8 @@ export function MobileNav({ room, role, pendingCount, stats }: MobileNavProps) {
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="flex flex-col items-center gap-0.5 px-4 py-2 text-muted-foreground transition-colors hover:text-foreground">
+              {/* Fix WCAG 2.5.5: py-3 garantisce touch target minimo di 48px */}
+              <button className="flex flex-col items-center gap-0.5 px-4 py-3 text-muted-foreground transition-colors hover:text-foreground">
                 <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                 </svg>

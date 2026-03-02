@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -33,7 +33,9 @@ interface ProposalCardProps {
   isMaintainer: boolean
 }
 
-export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardProps) {
+// Componente interno separato per permettere a React.memo di fare un
+// confronto shallow delle props ed evitare re-render non necessari.
+function ProposalCardComponent({ proposal, roomId, isMaintainer }: ProposalCardProps) {
   const [isOpen, setIsOpen] = useState(false)
   const payload = proposal.payload as Record<string, unknown>
   const triagerUsername = 'triager_username' in proposal ? proposal.triager_username : null
@@ -46,25 +48,32 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
           className="w-full text-left"
           aria-label={`Expand proposal for issue #${proposal.github_issue_number}`}
         >
+          {/*
+            Fix responsive: flex-wrap permette agli elementi dell'header di
+            andare a capo su mobile invece di andare fuori dallo schermo.
+            Il trigger occupa tutta la larghezza disponibile (w-full).
+          */}
           <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 w-full">
+              {/* Gruppo sinistro: numero issue, titolo e badge tipo/stato */}
+              <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
                 <span className="text-sm font-medium text-primary shrink-0">
                   #{proposal.github_issue_number}
                 </span>
                 {issueTitle && (
-                  <span className="truncate text-sm text-foreground/80">
+                  <span className="truncate text-sm text-foreground/80 min-w-0">
                     {issueTitle}
                   </span>
                 )}
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs shrink-0">
                   {KIND_LABELS[proposal.kind] || proposal.kind}
                 </Badge>
-                <Badge className={`text-xs ${STATUS_COLORS[proposal.status]}`}>
+                <Badge className={`text-xs shrink-0 ${STATUS_COLORS[proposal.status]}`}>
                   {proposal.status}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {/* Gruppo destro: triager, data e chevron — si sposta sotto su mobile */}
+              <div className="flex items-center gap-2 text-xs text-muted-foreground ml-auto shrink-0">
                 {triagerUsername && (
                   <span className="flex items-center gap-1.5 text-foreground font-medium">
                     {/* Avatar GitHub del triager */}
@@ -138,3 +147,7 @@ export function ProposalCard({ proposal, roomId, isMaintainer }: ProposalCardPro
     </Collapsible>
   )
 }
+
+// Esporta il componente wrappato con memo: React salterà il re-render
+// se proposal, roomId e isMaintainer non sono cambiati (confronto shallow).
+export const ProposalCard = memo(ProposalCardComponent)

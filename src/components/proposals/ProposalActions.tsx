@@ -42,6 +42,13 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
         return
       }
 
+      // Fix 4: status 207 indica successo parziale (GitHub OK, DB fallito)
+      if (res.status === 207) {
+        toast.warning(data.warning || 'Applied on GitHub but database update failed')
+        router.refresh()
+        return
+      }
+
       toast.success(`Applied: ${data.applied.join(', ')}`)
       router.refresh()
     } catch {
@@ -64,11 +71,16 @@ export function ProposalActions({ proposal, roomId }: ProposalActionsProps) {
     }
   }
 
-  function handleCopy() {
+  // Fix 3: clipboard.writeText è asincrono e può fallire (es. permessi negati)
+  async function handleCopy() {
     const payload = proposal.payload as Record<string, unknown>
     const text = (payload.comment as string) || JSON.stringify(payload, null, 2)
-    navigator.clipboard.writeText(text)
-    toast.success('Copied to clipboard')
+    try {
+      await navigator.clipboard.writeText(text)
+      toast.success('Copied to clipboard')
+    } catch {
+      toast.error('Copia negli appunti non riuscita')
+    }
   }
 
   return (

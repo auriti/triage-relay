@@ -63,31 +63,37 @@ export function ProposalForm({
   }
 
   function handleSubmit() {
+    // Validazione FUORI da startTransition — React può sopprimere side effects interni
+    if (kind === 'label' && selectedLabels.length === 0) {
+      toast.error('Select at least one label')
+      return
+    }
+    if (kind === 'comment' && !comment.trim()) {
+      toast.error('Enter a comment')
+      return
+    }
+    if (kind === 'duplicate') {
+      const dupNum = parseInt(duplicateOf, 10)
+      if (!duplicateOf || isNaN(dupNum) || dupNum <= 0) {
+        toast.error('Enter a valid positive issue number')
+        return
+      }
+    }
+
+    // Solo costruzione payload e invio async dentro startTransition
     startTransition(async () => {
       try {
         let payload: Record<string, unknown>
 
         switch (kind) {
           case 'label':
-            if (selectedLabels.length === 0) {
-              toast.error('Select at least one label')
-              return
-            }
             payload = { kind: 'label', labels: selectedLabels }
             break
           case 'comment':
-            if (!comment.trim()) {
-              toast.error('Enter a comment')
-              return
-            }
             payload = { kind: 'comment', comment }
             break
           case 'duplicate': {
             const dupNum = parseInt(duplicateOf, 10)
-            if (!duplicateOf || isNaN(dupNum) || dupNum <= 0) {
-              toast.error('Enter a valid positive issue number')
-              return
-            }
             payload = {
               kind: 'duplicate',
               duplicate_of: dupNum,

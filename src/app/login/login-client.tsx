@@ -1,9 +1,14 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 
 export default function LoginClient() {
+  // Fix 5: legge i query param di errore OAuth passati da Supabase dopo un redirect fallito
+  const searchParams = useSearchParams()
+  const authError = searchParams.get('error_description') || searchParams.get('error')
+
   async function handleLogin() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -31,6 +36,13 @@ export default function LoginClient() {
             Sign in with GitHub to start triaging issues collaboratively.
           </p>
         </div>
+
+        {/* Messaggio di errore OAuth da Supabase (es. accesso negato, token scaduto) */}
+        {authError && (
+          <div className="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            {authError}
+          </div>
+        )}
 
         {/* Card */}
         <div className="rounded-xl border border-border bg-card p-6">

@@ -191,10 +191,10 @@ export async function getUserRooms(): Promise<RoomWithMembership[]> {
 
   const roomIds = memberships.map((m) => m.room_id)
 
-  // Fetch rooms
+  // Fetch rooms — select dei soli campi necessari per ridurre il payload di rete
   const { data: rooms } = await supabase
     .from('rooms')
-    .select('*')
+    .select('id, repo_owner, repo_name, display_name, is_public, created_at, created_by')
     .in('id', roomIds)
 
   if (!rooms) return []

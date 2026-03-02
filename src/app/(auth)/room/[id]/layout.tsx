@@ -39,7 +39,8 @@ export default async function RoomLayout({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Fetch room
+  // Fetch room — select dei soli campi usati da Sidebar e MobileNav
+  // per ridurre il payload trasferito da Supabase
   const { data: room } = await supabase
     .from('rooms')
     .select('*')
